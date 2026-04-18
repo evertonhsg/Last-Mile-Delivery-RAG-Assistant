@@ -56,7 +56,6 @@ Logistics organizations rely on fragmented operational knowledge:
 ## 🏗️ Architecture Overview
 
 <p align="center">
-  <img src="docs/architecture.png" width="800"/>
 </p>
 
 ```text
