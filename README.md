@@ -44,7 +44,7 @@ This project builds an internal-facing Q&A assistant that makes that knowledge i
 
 | Phase | Focus | Status |
 |---|---|---|
-| **Phase 1** | Chunking strategies, embeddings, FAISS → ChromaDB | 🟠 In progress |
+| **Phase 1** | Chunking strategies, embeddings, FAISS → ChromaDB | ✅ Done |
 | **Phase 2** | Full RAG chain, HyDE, MMR, re-ranking, memory | ✅ Done |
 | **Phase 3** | LoRA/QLoRA fine-tuning on Mistral-7B | ⬜ Planned |
 | **Phase 4** | RAGAS evaluation, LangSmith tracing | ⬜ Planned |
@@ -75,7 +75,7 @@ To be clear about scope: this project currently implements the RAG pipeline itse
 | `LangChain` | Pipeline orchestration, chains, memory | ✅ Implemented |
 | `sentence-transformers` | Text → vector embeddings (`all-MiniLM-L6-v2`) | ✅ Implemented |
 | `ChromaDB` | Persistent vector store with metadata filtering | ✅ Implemented |
-| `FAISS` | In-memory vector search (Phase 1 baseline) | 🟠 In progress |
+| `FAISS` | In-memory vector search (Phase 1 baseline) | Superseded by ChromaDB (Phase 2) |
 | `Ollama` | Run Mistral-7B locally, no API key needed | ✅ Implemented |
 | `RAGAS` | RAG evaluation framework | ⬜ Planned |
 | `LangSmith` | Pipeline tracing and observability | ⬜ Planned |
@@ -89,32 +89,19 @@ To be clear about scope: this project currently implements the RAG pipeline itse
 lastmile-delivery-rag/
 ├── data/
 │   ├── raw/                    # synthetic source documents (.md)
-│   ├── processed/              # chunked text (chunks.json)
-│   └── chroma_db/              # persisted Chroma vector store
+│   ├── processed/
+│   │   └── chunks.json         # chunked output from Phase 1
+│   └── chroma_db/              # persisted Chroma vector store (gitignored, rebuild via build_vectorstore.py)
 │
 ├── notebooks/
-│   ├── 01_data_prep.ipynb      # Phase 1: chunking + embedding experiments
-│   ├── 02_rag_pipeline.ipynb   # Phase 2: retrieval + generation
-│   ├── 03_finetuning.ipynb     # Phase 3: LoRA fine-tune (Colab)
-│   └── 04_evaluation.ipynb     # Phase 4: RAGAS scoring
+│   └── 01_data_prep.ipynb      # Phase 1: chunking + embedding experiments
 │
 ├── src/
-│   ├── ingest.py               # document loading + chunking pipeline
-│   ├── embeddings.py           # embedding model wrapper
-│   ├── retriever.py            # vector store + retrieval logic
-│   ├── chain.py                # RAG chain assembly
-│   ├── memory.py               # conversation memory
+│   ├── build_vectorstore.py    # Phase 2: builds the persistent Chroma store from chunks.json
 │   └── rag_chain.py            # Phase 2: retrieval + generation + memory, REPL entry point
 │
-├── eval/
-│   ├── eval_dataset.json       # 50 Q&A pairs for RAGAS
-│   └── results/                # RAGAS run outputs
-│
-├── app/
-│   └── streamlit_app.py        # chat interface
-│
 ├── requirements.txt
-└── Dockerfile
+└── README.md
 ```
 
 ---
@@ -154,8 +141,8 @@ It wraps the ChromaDB store built during ingestion and a locally-running Ollama/
 ### 1 · Clone and install
 
 ```bash
-git clone https://github.com/evertonhsg/lastmile-delivery-rag
-cd lastmile-delivery-rag
+git clone https://github.com/evertonhsg/Last-Mile-Delivery-RAG-Assistant.git
+cd Last-Mile-Delivery-RAG-Assistant
 
 python -m venv .venv
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
@@ -176,19 +163,7 @@ python src/build_vectorstore.py   # builds data/chroma_db/ (gitignored) from dat
 ollama pull mistral
 ```
 
-### 4 · Ingest the knowledge base
-
-```bash
-python src/ingest.py --data-dir data/raw --chroma-dir .chroma
-```
-
-### 5 · Run the Streamlit app
-
-```bash
-streamlit run app/streamlit_app.py
-```
-
-### 6 · Run the RAG assistant
+### 4 · Run the RAG assistant
 
 ```bash
 python src/rag_chain.py
@@ -223,16 +198,16 @@ python src/rag_chain.py
 
 ## Concepts covered
 
-| Concept | Notebook | What you learn |
+| Concept | Reference | What you learn |
 |---|---|---|
 | Transformer embeddings | `01_data_prep` | Text → dense vectors; cosine similarity for semantic search |
 | Chunking strategies | `01_data_prep` | Fixed vs recursive; chunk size/overlap trade-offs |
 | Vector stores | `01_data_prep` | FAISS internals; ChromaDB persistence + metadata filtering |
-| RAG architecture | `02_rag_pipeline` | End-to-end retrieval-augmented generation |
-| HyDE & MMR | `02_rag_pipeline` | Advanced retrieval beyond naive top-k |
-| LoRA / QLoRA | `03_finetuning` | Parameter-efficient fine-tuning on free GPU |
-| RAGAS | `04_evaluation` | Rigorous RAG quality measurement |
-| LangSmith | `04_evaluation` | Production observability for LLM apps |
+| RAG architecture | `src/rag_chain.py` | End-to-end retrieval-augmented generation |
+| HyDE & MMR | `src/rag_chain.py` | Advanced retrieval beyond naive top-k |
+| LoRA / QLoRA | (not yet created) | Parameter-efficient fine-tuning on free GPU |
+| RAGAS | (not yet created) | Rigorous RAG quality measurement |
+| LangSmith | (not yet created) | Production observability for LLM apps |
 
 ---
 
