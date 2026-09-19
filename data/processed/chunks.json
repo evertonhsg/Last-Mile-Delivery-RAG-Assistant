@@ -1,0 +1,387 @@
+[
+  {
+    "id": "chunk_0000",
+    "text": "# Meridian Logistics — Capacity Planning & Fleet Management Guidelines (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Capacity Planning Cycle\n\nMeridian Logistics uses a rolling 13-week capacity planning cycle, updated every Monday.",
+    "source": "capacity_planning.md",
+    "chunk_index": 1,
+    "char_count": 275
+  },
+  {
+    "id": "chunk_0001",
+    "text": "### Planning Horizons\n- **Week 1–2 (Operational):** Firm plan. Fleet and headcount locked.\n  Changes require Station Manager approval.\n- **Week 3–6 (Tactical):** Provisional plan. Volume forecasts drive fleet\n  booking; vendor contracts activated or released here.\n- **Week 7–13 (Strategic):** Indicative plan. Used for vendor negotiations,\n  capital leasing decisions, and headcount hiring plans.\n\n---\n\n## 2. Demand Forecasting",
+    "source": "capacity_planning.md",
+    "chunk_index": 2,
+    "char_count": 428
+  },
+  {
+    "id": "chunk_0002",
+    "text": "---\n\n## 2. Demand Forecasting\n\nVolume forecasts are produced by the Demand Planning team using an ensemble model:\n\n| Model | Weight | Best for |\n|---|---|---|\n| XGBoost (gradient boosting) | 40% | Capturing non-linear volume spikes |\n| Holt-Winters (exponential smoothing) | 35% | Seasonal baseline |\n| ARIMA | 15% | Short-term trend correction |\n| Human adjustment | 10% | Events, promotions, known anomalies |",
+    "source": "capacity_planning.md",
+    "chunk_index": 3,
+    "char_count": 410
+  },
+  {
+    "id": "chunk_0003",
+    "text": "Forecasts are generated at station × service-type × day granularity.\nMAPE target: ≤8% at station level over a 7-day horizon.\n\n---\n\n## 3. Fleet Sizing Rules\n\nRequired fleet size is calculated daily using:\n\n```\nRequired vans = ceil(Forecast volume / Target stops-per-van)\nBuffer fleet  = ceil(Required vans × Buffer rate)\nTotal fleet   = Required vans + Buffer fleet\n```",
+    "source": "capacity_planning.md",
+    "chunk_index": 4,
+    "char_count": 368
+  },
+  {
+    "id": "chunk_0004",
+    "text": "Buffer rates by zone:\n- Zone 1: 8% buffer (low volatility, high density).\n- Zone 2: 12% buffer.\n- Zone 3: 18% buffer.\n- Zone 4: 25% buffer (high volatility, route uncertainty).\n\n---\n\n## 4. Vendor Fleet Management\n\n### Vendor Tier Classification",
+    "source": "capacity_planning.md",
+    "chunk_index": 5,
+    "char_count": 244
+  },
+  {
+    "id": "chunk_0005",
+    "text": "### Vendor Tier Classification\n\n| Tier | Criteria | Benefits |\n|---|---|---|\n| Gold | ≥500 stops/day, ≥24-month relationship, SLA ≥97% | Guaranteed minimum volume commitment, priority dispatch |\n| Silver | 200–499 stops/day, ≥12-month relationship, SLA ≥94% | Preferred booking, 30-day rolling contract |\n| Bronze | <200 stops/day or <12-month relationship | Ad-hoc booking, no volume guarantee |",
+    "source": "capacity_planning.md",
+    "chunk_index": 6,
+    "char_count": 396
+  },
+  {
+    "id": "chunk_0006",
+    "text": "### Vendor SLA Requirements\n- Vendors must achieve ≥93% on-time delivery rate measured over 28 days.\n- Failure to meet SLA for 2 consecutive months triggers a performance review.\n- Three consecutive months below SLA results in tier demotion or contract termination.\n\n### Vendor Data Integration\n- Gold and Silver vendors connect via Meridian Vendor API for real-time tracking.\n- Bronze vendors submit end-of-day scan files (CSV format, by 23:00 local time).\n\n---\n\n## 5. Peak Season Capacity Protocol",
+    "source": "capacity_planning.md",
+    "chunk_index": 7,
+    "char_count": 496
+  },
+  {
+    "id": "chunk_0007",
+    "text": "---\n\n## 5. Peak Season Capacity Protocol\n\nPeak season is defined as November 15 – January 6 each year.\n\n### Pre-Peak Preparation (October)\n1. Vendor fleet bookings increased by planned peak uplift percentage (typically 35–60%).\n2. Temporary driver headcount contracts activated.\n3. Overflow sortation capacity confirmed with hub operations.\n4. Dynamic routing enabled for all zones.",
+    "source": "capacity_planning.md",
+    "chunk_index": 8,
+    "char_count": 382
+  },
+  {
+    "id": "chunk_0008",
+    "text": "### Peak Activation Triggers\nAdditional surge capacity is activated when:\n- Daily volume exceeds forecast by >15% for 2 consecutive days.\n- SLA performance drops below 95% at any station for 3 consecutive days.\n\n### Peak De-escalation\nSurge capacity stands down when:\n- 7-day rolling volume drops to within 5% of non-peak forecast.\n- Date passes January 7.\n\n---\n\n## 6. Capacity Utilisation Targets",
+    "source": "capacity_planning.md",
+    "chunk_index": 9,
+    "char_count": 397
+  },
+  {
+    "id": "chunk_0009",
+    "text": "---\n\n## 6. Capacity Utilisation Targets\n\n| Metric | Target | Alert threshold |\n|---|---|---|\n| Fleet utilisation (owned) | 85–92% | <75% or >95% |\n| Vendor volume share | ≤50% of daily volume | >60% for >3 days |\n| Hub sortation utilisation | ≤88% of rated capacity | >92% |\n| Driver overtime rate | ≤12% of driver-days | >20% |\n\nWhen any metric crosses its alert threshold, an automated notification is\nsent to the Station Manager and Regional Planning lead.",
+    "source": "capacity_planning.md",
+    "chunk_index": 10,
+    "char_count": 459
+  },
+  {
+    "id": "chunk_0010",
+    "text": "# Meridian Logistics — Routing Rules & Route Optimisation Standards (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Route Construction Principles\n\nAll last-mile routes at Meridian Logistics are constructed using the following\nhierarchy of constraints:",
+    "source": "routing_rules.md",
+    "chunk_index": 1,
+    "char_count": 294
+  },
+  {
+    "id": "chunk_0011",
+    "text": "1. **Hard constraints** (must never be violated):\n   - Vehicle capacity (weight and volume limits).\n   - Driver legal working hours: max 9h driving per day (EU Regulation 561/2006).\n   - Time-window commitments for Priority Overnight stops.\n   - Hazmat segregation rules (ADR-classified parcels cannot share with food).",
+    "source": "routing_rules.md",
+    "chunk_index": 2,
+    "char_count": 319
+  },
+  {
+    "id": "chunk_0012",
+    "text": "2. **Soft constraints** (optimised, but can be relaxed under operational pressure):\n   - Preferred stop sequence (minimise backtracking).\n   - Fuel/energy efficiency (minimise total km driven).\n   - Driver familiarity with area (returning drivers preferred for complex zones).\n\n---\n\n## 2. Route Types",
+    "source": "routing_rules.md",
+    "chunk_index": 3,
+    "char_count": 300
+  },
+  {
+    "id": "chunk_0013",
+    "text": "---\n\n## 2. Route Types\n\n### Static Routes\n- Fixed sequence of stops reconstructed each day based on volume.\n- Used in Zone 1 and Zone 2 where volume is high and predictable.\n- Reviewed monthly by the Network Planning team.\n- Advantage: simple to manage, easy to train new drivers.",
+    "source": "routing_rules.md",
+    "chunk_index": 4,
+    "char_count": 286
+  },
+  {
+    "id": "chunk_0014",
+    "text": "### Dynamic Routes\n- Constructed fresh each morning using the optimisation engine.\n- Used in Zone 3 and Zone 4 where stop density varies daily.\n- Inputs: parcel manifests, driver availability, vehicle capacity, traffic data.\n- Advantage: more efficient, adapts to volume fluctuations.\n\n### Mixed Routes\n- Static backbone with dynamic overflow stops appended at end.\n- Common in Zone 2 during peak periods (November–December, Easter).\n\n---\n\n## 3. Fleet Allocation Rules",
+    "source": "routing_rules.md",
+    "chunk_index": 5,
+    "char_count": 468
+  },
+  {
+    "id": "chunk_0015",
+    "text": "---\n\n## 3. Fleet Allocation Rules\n\nFleet is allocated in priority order based on route type and zone:\n\n| Priority | Vehicle type | Preferred zone | Max load |\n|---|---|---|---|\n| 1 | Electric cargo bike | Zone 1 only | 100 kg / 0.5 m³ |\n| 2 | Electric van (3.5t) | Zone 1, Zone 2 | 900 kg / 6 m³ |\n| 3 | Diesel van (7.5t) | Zone 2, Zone 3 | 2,500 kg / 18 m³ |\n| 4 | HGV (12t) | Zone 3, Zone 4 | 6,000 kg / 40 m³ |\n| 5 | Vendor van | Any zone | Per vendor contract |",
+    "source": "routing_rules.md",
+    "chunk_index": 6,
+    "char_count": 465
+  },
+  {
+    "id": "chunk_0016",
+    "text": "Vendor fleet is dispatched **only after** owned fleet is fully utilised for the day,\nunless a vendor contract specifies guaranteed minimum volume.\n\n---\n\n## 4. Route Optimisation Algorithm\n\nThe Meridian Logistics planning system uses a **Vehicle Routing Problem with Time Windows\n(VRPTW)** solver. The objective function minimises:\n\n```\nTotal cost = α × distance + β × time + γ × SLA_penalty + δ × capacity_waste\n```\n\nDefault weights: α=0.35, β=0.30, γ=0.25, δ=0.10.",
+    "source": "routing_rules.md",
+    "chunk_index": 7,
+    "char_count": 459
+  },
+  {
+    "id": "chunk_0017",
+    "text": "Default weights: α=0.35, β=0.30, γ=0.25, δ=0.10.\n\nDuring peak season (Nov 15 – Jan 6), γ is increased to 0.40 and δ reduced to\n0.05 to prioritise SLA compliance over efficiency.\n\n---\n\n## 5. Dynamic Stop Addition (DSA)\n\nStops added after the route has been dispatched (typically from e-commerce\nplatforms with late cut-off times) follow the DSA protocol:",
+    "source": "routing_rules.md",
+    "chunk_index": 8,
+    "char_count": 353
+  },
+  {
+    "id": "chunk_0018",
+    "text": "1. System checks if any active driver is within 2 km of the new stop.\n2. If yes: stop is appended to that driver's manifest via mobile app.\n3. If no: stop is held for next-day delivery unless Priority Overnight service.\n4. Priority Overnight late additions are escalated to the station manager for\n   manual decision.\n\n---\n\n## 6. Route Performance KPIs",
+    "source": "routing_rules.md",
+    "chunk_index": 9,
+    "char_count": 352
+  },
+  {
+    "id": "chunk_0019",
+    "text": "---\n\n## 6. Route Performance KPIs\n\n| KPI | Definition | Target |\n|---|---|---|\n| Stop compliance rate | % of planned stops completed on day of dispatch | ≥98.5% |\n| Route adherence | % of routes completed in planned sequence | ≥92.0% |\n| On-road time variance | Actual vs planned drive time | ≤+15% |\n| Km per stop | Total km driven / total stops completed | ≤1.8 km (Zone 1–2), ≤4.5 km (Zone 3–4) |\n| Failed first attempt rate | Failed deliveries / total attempts | ≤7.0% |",
+    "source": "routing_rules.md",
+    "chunk_index": 10,
+    "char_count": 474
+  },
+  {
+    "id": "chunk_0020",
+    "text": "KPIs are reported at route level, aggregated to station level daily.\n\n---\n\n## 7. Route Review Process\n\nRoutes are reviewed under these conditions:\n\n- **Weekly:** Station manager reviews routes with adherence below 88%.\n- **Monthly:** NP team reviews zone-level km-per-stop trends.\n- **Triggered:** Any route generating >3 customer complaints in a 7-day period\n  is flagged for immediate review.\n- **Seasonal:** Full route restructure in October (pre-peak) and February\n  (post-peak) each year.",
+    "source": "routing_rules.md",
+    "chunk_index": 11,
+    "char_count": 494
+  },
+  {
+    "id": "chunk_0021",
+    "text": "# Meridian Logistics — Delivery Zone Definitions (Synthetic)\n\n> **Disclaimer:** This is a synthetic document created for educational purposes.\n> All data, names, and figures are fictitious and do not represent real-world logistics operations.\n\n---\n\n## Overview\n\nMeridian Logistics organises last-mile delivery into geographic zones. Each zone is\nassigned to a set of postal codes and governs routing rules, fleet allocation,\nSLA commitments, and cost structures.\n\n---\n\n## Zone Classification",
+    "source": "zone_definitions.md",
+    "chunk_index": 1,
+    "char_count": 469
+  },
+  {
+    "id": "chunk_0022",
+    "text": "### Zone 1 — Urban Core\n- **Coverage:** Central city districts, typically postcodes with population\n  density above 5,000 inhabitants per km².\n- **Fleet type:** Electric cargo bikes, compact vans (max 3.5t), walking couriers.\n- **Max stops per route:** 80 stops/day for vans, 40 stops/day for cargo bikes.\n- **Standard SLA:** Next-day delivery by 12:00 for Priority shipments;\n  by 18:00 for Standard.\n- **Vendor fleet allowed:** Yes, up to 30% of daily volume.",
+    "source": "zone_definitions.md",
+    "chunk_index": 2,
+    "char_count": 461
+  },
+  {
+    "id": "chunk_0023",
+    "text": "- **Example cities:** Porto Centro, London Zone 1, Paris 1er–8e arrondissements.",
+    "source": "zone_definitions.md",
+    "chunk_index": 3,
+    "char_count": 80
+  },
+  {
+    "id": "chunk_0024",
+    "text": "### Zone 2 — Urban Periphery\n- **Coverage:** Suburban residential areas within 20 km of city core.\n- **Fleet type:** Medium vans (up to 7.5t), some electric vehicles.\n- **Max stops per route:** 100 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 for all service types.\n- **Vendor fleet allowed:** Yes, up to 50% of daily volume.\n- **Example cities:** Porto — Matosinhos, Maia; London — Zone 3–4 boroughs.",
+    "source": "zone_definitions.md",
+    "chunk_index": 4,
+    "char_count": 414
+  },
+  {
+    "id": "chunk_0025",
+    "text": "### Zone 3 — Semi-Rural\n- **Coverage:** Towns and villages between 20–60 km from the nearest hub.\n- **Fleet type:** Large vans (up to 12t), occasional HGV trunking.\n- **Max stops per route:** 60 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 where volume justifies daily\n  frequency; otherwise 2-day delivery.\n- **Vendor fleet allowed:** Yes, up to 70% of daily volume.",
+    "source": "zone_definitions.md",
+    "chunk_index": 5,
+    "char_count": 380
+  },
+  {
+    "id": "chunk_0026",
+    "text": "### Zone 4 — Rural / Remote\n- **Coverage:** Postcodes more than 60 km from the nearest delivery hub,\n  low-density areas.\n- **Fleet type:** Large vans and HGVs only.\n- **Max stops per route:** 35 stops/day.\n- **Standard SLA:** 2-day delivery standard; next-day available as premium\n  surcharge service only.\n- **Vendor fleet allowed:** Yes, up to 90% of daily volume. Owned\n  fleet may not be commercially viable.\n\n---\n\n## Zone Reclassification Policy",
+    "source": "zone_definitions.md",
+    "chunk_index": 6,
+    "char_count": 457
+  },
+  {
+    "id": "chunk_0027",
+    "text": "---\n\n## Zone Reclassification Policy\n\nZones are reviewed quarterly. A zone may be reclassified if any of the\nfollowing thresholds are met for two consecutive quarters:",
+    "source": "zone_definitions.md",
+    "chunk_index": 7,
+    "char_count": 167
+  },
+  {
+    "id": "chunk_0028",
+    "text": "| Trigger | Reclassification direction |\n|---|---|\n| Average daily volume increases >25% | One zone lower (e.g. Z3 → Z2) |\n| Average daily volume decreases >20% | One zone higher (e.g. Z2 → Z3) |\n| New hub opens within 30 km | Eligible for Zone 1 or 2 review |\n| Customer density drops below 200/km² | Eligible for Zone 4 review |\n\n---\n\n## Zone-to-Hub Assignment\n\nEach zone is anchored to a primary hub and may have a secondary hub for\noverflow or contingency routing.",
+    "source": "zone_definitions.md",
+    "chunk_index": 8,
+    "char_count": 468
+  },
+  {
+    "id": "chunk_0029",
+    "text": "| Zone | Primary Hub | Secondary Hub | Max trunking distance |\n|---|---|---|---|\n| Zone 1 | Porto Urban Hub | N/A | 15 km |\n| Zone 2 | Porto Urban Hub | Maia Satellite | 30 km |\n| Zone 3 | Aveiro Regional Hub | Porto Urban Hub | 65 km |\n| Zone 4 | Coimbra Hub | Aveiro Regional Hub | 130 km |",
+    "source": "zone_definitions.md",
+    "chunk_index": 9,
+    "char_count": 292
+  },
+  {
+    "id": "chunk_0030",
+    "text": "# Meridian Logistics — Station Operations Manual (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Station Types",
+    "source": "station_operations.md",
+    "chunk_index": 1,
+    "char_count": 159
+  },
+  {
+    "id": "chunk_0031",
+    "text": "---\n\n## 1. Station Types\n\n### Urban Hub Station\n- **Role:** Primary sortation and dispatch point for Zone 1 and Zone 2 deliveries.\n- **Operating hours:** 05:00–22:00 Monday–Saturday; 07:00–20:00 Sunday.\n- **Inbound trunking window:** 04:00–06:30 (first wave), 10:00–11:30 (second wave).\n- **Dispatch cut-off:** 08:30 (Priority routes), 10:00 (Standard routes).\n- **Minimum staffing:** 4 sorters, 2 loaders, 1 supervisor per shift.",
+    "source": "station_operations.md",
+    "chunk_index": 2,
+    "char_count": 430
+  },
+  {
+    "id": "chunk_0032",
+    "text": "### Satellite Station\n- **Role:** Last-mile dispatch for Zone 2 overflow and Zone 3 coverage.\n- **Operating hours:** 06:00–20:00 Monday–Saturday.\n- **Inbound trunking window:** 05:30–07:30 only (single wave).\n- **Dispatch cut-off:** 09:00 (all route types).\n- **Minimum staffing:** 2 sorters, 1 loader, 1 supervisor per shift.",
+    "source": "station_operations.md",
+    "chunk_index": 3,
+    "char_count": 326
+  },
+  {
+    "id": "chunk_0033",
+    "text": "### Pickup Point Partner\n- **Role:** Customer collection point (PUDO — Pick Up Drop Off).\n- **Operating hours:** Set by the partner (typically retail store hours).\n- **Parcel hold period:** 7 calendar days before return to sender.\n- **Max capacity:** 200 parcels per day (standard PUDO agreement).\n\n---\n\n## 2. Morning Sortation Process\n\nThe morning sortation runs as follows after inbound trunking:",
+    "source": "station_operations.md",
+    "chunk_index": 4,
+    "char_count": 398
+  },
+  {
+    "id": "chunk_0034",
+    "text": "1. **Unload & scan** — all inbound parcels scanned on conveyor belt (Meridian Scan Events entry: `UNLOAD`).\n2. **Exception identification** — damaged, mislabelled, or hazmat parcels segregated (event: `EXCEPTION`).\n3. **Route assignment** — system auto-assigns parcel to route based on postcode (event: `ROUTE_ASSIGN`).\n4. **Loading** — parcels loaded into vehicles in reverse-stop-sequence order (last stop loaded first).",
+    "source": "station_operations.md",
+    "chunk_index": 5,
+    "char_count": 408
+  },
+  {
+    "id": "chunk_0035",
+    "text": "5. **Driver briefing** — 10-minute standup: route highlights, special instructions, weather alerts.\n6. **Dispatch scan** — each vehicle scanned out of depot (event: `DISPATCH`).",
+    "source": "station_operations.md",
+    "chunk_index": 6,
+    "char_count": 177
+  },
+  {
+    "id": "chunk_0036",
+    "text": "Target: full sortation completed within 90 minutes of last inbound truck arrival.\n\n---\n\n## 3. End-of-Day Process",
+    "source": "station_operations.md",
+    "chunk_index": 7,
+    "char_count": 112
+  },
+  {
+    "id": "chunk_0037",
+    "text": "1. **Vehicle return** — all owned fleet must return to station by 21:00.\n2. **POD reconciliation** — driver submits Proof of Delivery count; system reconciles\n   against dispatched manifest (event: `RECONCILE`).\n3. **Undelivered parcel handling:**\n   - Parcel with remaining attempts → returned to sort cage for next day.\n   - Parcel at max attempts → labelled for PUDO transfer or return-to-sender.\n4. **Vehicle condition report** — driver completes digital checklist (damage, fuel/charge level).",
+    "source": "station_operations.md",
+    "chunk_index": 8,
+    "char_count": 497
+  },
+  {
+    "id": "chunk_0038",
+    "text": "5. **Station manager sign-off** — reviews SLA performance dashboard before 22:00.",
+    "source": "station_operations.md",
+    "chunk_index": 9,
+    "char_count": 81
+  },
+  {
+    "id": "chunk_0039",
+    "text": "---\n\n## 4. Key Performance Indicators (Station Level)",
+    "source": "station_operations.md",
+    "chunk_index": 10,
+    "char_count": 53
+  },
+  {
+    "id": "chunk_0040",
+    "text": "| KPI | Definition | Daily target |\n|---|---|---|\n| Sortation accuracy | Parcels correctly routed / total sorted | ≥99.8% |\n| On-time dispatch | Routes dispatched before cut-off / total routes | ≥99.0% |\n| Delivery success rate | Successful first-attempt deliveries / total attempts | ≥93.0% |\n| POD scan rate | Parcels with valid POD scan / total delivered | ≥99.5% |\n| Undelivered rate | Undelivered at end of day / total dispatched | ≤5.0% |",
+    "source": "station_operations.md",
+    "chunk_index": 11,
+    "char_count": 444
+  },
+  {
+    "id": "chunk_0041",
+    "text": "| Customer complaint rate | Complaints per 1,000 deliveries | ≤2.5 |",
+    "source": "station_operations.md",
+    "chunk_index": 12,
+    "char_count": 68
+  },
+  {
+    "id": "chunk_0042",
+    "text": "---\n\n## 5. Escalation Procedures\n\n### Level 1 — Operational Issue (Station Manager handles)\n- Single route SLA breach.\n- Vehicle breakdown (spare vehicle available).\n- Weather delay <2 hours.\n\n### Level 2 — Tactical Issue (Regional Operations Manager notified)\n- Station SLA below target for >3 consecutive days.\n- Vehicle shortage affecting >20% of planned routes.\n- Vendor performance below contractual SLA for >7 days.",
+    "source": "station_operations.md",
+    "chunk_index": 13,
+    "char_count": 422
+  },
+  {
+    "id": "chunk_0043",
+    "text": "### Level 3 — Strategic Issue (Division VP notified)\n- Hub sortation failure (>50% of parcels unprocessed).\n- Industrial action affecting station operations.\n- SLA below target for >10 consecutive days at any hub station.\n\n---\n\n## 6. Health, Safety & Compliance",
+    "source": "station_operations.md",
+    "chunk_index": 14,
+    "char_count": 261
+  },
+  {
+    "id": "chunk_0044",
+    "text": "---\n\n## 6. Health, Safety & Compliance\n\n- Manual handling limit: 25 kg per parcel without mechanical assistance.\n- All sorters complete manual handling training every 12 months.\n- Hazmat parcels (ADR classified) must be handled by certified staff only.\n- GDPR: Customer address labels must be shredded, not recycled, at end of day.\n- Vehicle telematics data is retained for 90 days for compliance and route analysis.",
+    "source": "station_operations.md",
+    "chunk_index": 15,
+    "char_count": 416
+  },
+  {
+    "id": "chunk_0045",
+    "text": "# Meridian Logistics — Service Level Agreement (SLA) Policies (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Service Tiers\n\nMeridian Logistics operates three customer-facing service tiers for last-mile delivery:",
+    "source": "sla_policies.md",
+    "chunk_index": 1,
+    "char_count": 255
+  },
+  {
+    "id": "chunk_0046",
+    "text": "### Priority Overnight (PO)\n- **Commitment:** Delivery by 10:30 the next business day.\n- **Eligible zones:** Zone 1 and Zone 2 only.\n- **Surcharge:** +€4.50 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 10:30.\n- **Compensation:** Full refund of surcharge on breach + credit note of €2.00.",
+    "source": "sla_policies.md",
+    "chunk_index": 2,
+    "char_count": 332
+  },
+  {
+    "id": "chunk_0047",
+    "text": "### Express (EX)\n- **Commitment:** Delivery by 18:00 the next business day.\n- **Eligible zones:** All zones (Zone 4 subject to volume availability).\n- **Surcharge:** +€1.80 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 18:00.\n- **Compensation:** Refund of surcharge on breach.",
+    "source": "sla_policies.md",
+    "chunk_index": 3,
+    "char_count": 320
+  },
+  {
+    "id": "chunk_0048",
+    "text": "### Standard (ST)\n- **Commitment:** Delivery within 2 business days by 18:00.\n- **Eligible zones:** All zones.\n- **Surcharge:** Base rate, no surcharge.\n- **Failure threshold:** SLA breach after 18:00 on day 2.\n- **Compensation:** Credit note of €1.00 per parcel on breach.\n\n---\n\n## 2. SLA Performance Targets\n\nMeridian Logistics sets the following internal performance targets by zone:",
+    "source": "sla_policies.md",
+    "chunk_index": 4,
+    "char_count": 380
+  },
+  {
+    "id": "chunk_0049",
+    "text": "| Service | Zone 1 | Zone 2 | Zone 3 | Zone 4 |\n|---|---|---|---|---|\n| Priority Overnight | ≥98.5% | ≥97.0% | N/A | N/A |\n| Express | ≥97.5% | ≥96.0% | ≥94.0% | ≥90.0% |\n| Standard | ≥99.0% | ≥98.5% | ≥97.0% | ≥95.0% |\n\nPerformance is measured at station level, averaged over rolling 28-day periods.\n\n---\n\n## 3. Failed Delivery Handling",
+    "source": "sla_policies.md",
+    "chunk_index": 5,
+    "char_count": 337
+  },
+  {
+    "id": "chunk_0050",
+    "text": "---\n\n## 3. Failed Delivery Handling\n\n### Attempt Policy\n- A maximum of **3 delivery attempts** are made before a parcel is returned\n  to the sender or held at a pickup point.\n- Attempt intervals: day 0 (first attempt), day 1 (second), day 3 (third).\n- After 3 failed attempts, parcel moves to **Hold for Pickup** status for 7 days.",
+    "source": "sla_policies.md",
+    "chunk_index": 6,
+    "char_count": 331
+  },
+  {
+    "id": "chunk_0051",
+    "text": "### Missed Delivery Window\n- If the customer is absent, a **digital notification** is triggered immediately\n  via the Meridian Delivery Manager app.\n- Customer has until 20:00 on the same day to reschedule via self-service.\n- If not rescheduled, the next attempt is automatically booked.",
+    "source": "sla_policies.md",
+    "chunk_index": 7,
+    "char_count": 284
+  },
+  {
+    "id": "chunk_0052",
+    "text": "### Damage or Loss\n- Claims must be filed within **10 business days** of expected delivery date.\n- Standard liability cap: **€100 per parcel** unless declared value is higher.\n- High-value shipments (declared value >€500) require mandatory insurance.\n\n---\n\n## 4. SLA Measurement & Reporting",
+    "source": "sla_policies.md",
+    "chunk_index": 8,
+    "char_count": 290
+  },
+  {
+    "id": "chunk_0053",
+    "text": "---\n\n## 4. SLA Measurement & Reporting\n\n- **Data source:** Meridian Scan Events (out-for-delivery scan + POD scan).\n- **Reporting cadence:** Daily dashboard refresh at 06:00 CET; weekly station\n  manager report on Mondays.\n- **Escalation trigger:** If any station drops below SLA target for 3 consecutive\n  days, an automated alert is sent to the Regional Operations Manager.\n- **Annual review:** SLA targets are reviewed every April in alignment with\n  network capacity plans.\n\n---",
+    "source": "sla_policies.md",
+    "chunk_index": 9,
+    "char_count": 487
+  },
+  {
+    "id": "chunk_0054",
+    "text": "---\n\n## 5. SLA Exclusions\n\nThe following conditions exempt Meridian Logistics from SLA compensation obligations:\n\n- Severe weather events (wind >90 km/h, snowfall >15 cm in 24h, flooding).\n- Industrial action affecting transport infrastructure.\n- Incorrect or incomplete delivery address provided by shipper.\n- Force majeure events as defined under applicable law.\n- Bank holidays in the destination country (these are excluded from\n  the business day count).",
+    "source": "sla_policies.md",
+    "chunk_index": 10,
+    "char_count": 446
+  }
+]

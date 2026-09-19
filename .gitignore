@@ -1,0 +1,17 @@
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+.venv/
+.venv-1/
+
+# ── Editors / OS ────────────────────────────────────────────────────────────
+.DS_Store
+.ipynb_checkpoints/
+
+# ── Build artifacts ─────────────────────────────────────────────────────────
+# The Chroma vector store is regeneratable from data/processed/chunks.json via
+# `python src/build_vectorstore.py` — it's binary embedding data, not source,
+# and would only bloat git history (and grow every time it's rebuilt) if
+# committed. Anyone cloning the repo needs to run that script once before
+# src/rag_chain.py can retrieve anything.
+data/chroma_db/
