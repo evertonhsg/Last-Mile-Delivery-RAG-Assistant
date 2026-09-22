@@ -15,3 +15,13 @@ __pycache__/
 # committed. Anyone cloning the repo needs to run that script once before
 # src/rag_chain.py can retrieve anything.
 data/chroma_db/
+
+# LoRA adapter weights are the same story: regeneratable from
+# data/finetune/*.jsonl via `python src/train_lora.py` (see its docstring for
+# the exact config each run used), and mlx-lm writes a full checkpoint
+# snapshot every `--save-every` iterations — adapters/lastmile-lora-v2/ alone
+# is ~840MB across 20 checkpoints. adapter_config.json and training_log.json
+# (the actual loss curves — the part worth keeping in git) are small and NOT
+# ignored; only the .safetensors weight files are. Anyone who wants the
+# actual fine-tuned model running needs to re-run train_lora.py once.
+adapters/**/*.safetensors

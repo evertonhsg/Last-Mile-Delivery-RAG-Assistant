@@ -46,7 +46,7 @@ This project builds an internal-facing Q&A assistant that makes that knowledge i
 |---|---|---|
 | **Phase 1** | Chunking strategies, embeddings, FAISS → ChromaDB | ✅ Done |
 | **Phase 2** | Full RAG chain, HyDE, MMR, re-ranking, memory | ✅ Done |
-| **Phase 3** | LoRA/QLoRA fine-tuning on Mistral-7B | ⬜ Planned |
+| **Phase 3** | LoRA fine-tuning on a 4-bit quantized Mistral-7B (QLoRA-style) via MLX | ✅ Done |
 | **Phase 4** | RAGAS evaluation, LangSmith tracing | ⬜ Planned |
 | **Phase 5** | Streamlit chat UI, Docker, deployment | ⬜ Planned |
 
@@ -77,6 +77,7 @@ To be clear about scope: this project currently implements the RAG pipeline itse
 | `ChromaDB` | Persistent vector store with metadata filtering | ✅ Implemented |
 | `FAISS` | In-memory vector search (Phase 1 baseline) | Superseded by ChromaDB (Phase 2) |
 | `Ollama` | Run Mistral-7B locally, no API key needed | ✅ Implemented |
+| `mlx-lm` | QLoRA-style fine-tuning (LoRA on a 4-bit quantized base) + local inference on Apple Silicon (Apple Silicon only — will not install on Intel Macs or non-Apple hardware) | ✅ Implemented |
 | `RAGAS` | RAG evaluation framework | ⬜ Planned |
 | `LangSmith` | Pipeline tracing and observability | ⬜ Planned |
 | `Streamlit` | Chat UI with source attribution panel | ⬜ Planned |
@@ -88,17 +89,34 @@ To be clear about scope: this project currently implements the RAG pipeline itse
 ```
 lastmile-delivery-rag/
 ├── data/
-│   ├── raw/                    # synthetic source documents (.md)
+│   ├── raw/                         # synthetic source documents (.md)
 │   ├── processed/
-│   │   └── chunks.json         # chunked output from Phase 1
-│   └── chroma_db/              # persisted Chroma vector store (gitignored, rebuild via build_vectorstore.py)
+│   │   └── chunks.json              # chunked output from Phase 1
+│   ├── chroma_db/                   # persisted Chroma vector store (gitignored, rebuild via build_vectorstore.py)
+│   └── finetune/                    # Phase 3: LoRA training data
+│       ├── train.jsonl              # current train split (95 ex.) — confident-answer + refusal examples merged
+│       ├── valid.jsonl              # current val split (17 ex.)
+│       ├── train_v1.jsonl           # pre-refusal-fix split (79 ex., confident-answer only) — kept for reference
+│       ├── valid_v1.jsonl           # pre-refusal-fix val split (15 ex.) — kept for reference
+│       └── refusal_examples.json    # the 18 deliberate refusal examples merged into train/valid.jsonl
 │
 ├── notebooks/
-│   └── 01_data_prep.ipynb      # Phase 1: chunking + embedding experiments
+│   └── 01_data_prep.ipynb           # Phase 1: chunking + embedding experiments
 │
 ├── src/
-│   ├── build_vectorstore.py    # Phase 2: builds the persistent Chroma store from chunks.json
-│   └── rag_chain.py            # Phase 2: retrieval + generation + memory, REPL entry point
+│   ├── build_vectorstore.py         # Phase 2: builds the persistent Chroma store from chunks.json
+│   ├── rag_chain.py                 # Phase 2/3: retrieval + generation + memory, dual backend, REPL entry point
+│   ├── generate_finetune_data.py    # Phase 3: builds train/valid.jsonl from chunks.json (RAFT-style + quality gates)
+│   ├── generate_refusal_examples.py # Phase 3: builds the deliberate refusal examples
+│   ├── train_lora.py                # Phase 3: LoRA fine-tuning via mlx-lm, versioned run config
+│   ├── compare_models.py            # Phase 3: qualitative base-vs-fine-tuned side-by-side
+│   └── mlx_smoke_test.py            # Phase 3: base-model load/generate/memory sanity check
+│
+├── adapters/                         # Phase 3: LoRA runs (.safetensors gitignored — see .gitignore; configs/logs kept)
+│   ├── lastmile-lora/                # run 1: 316 iters (4 epochs), 94-example dataset — overfit past iter ~159
+│   ├── lastmile-lora-earlystop/      # run 2: early-stopped at iter 160 on the same 94-example dataset
+│   ├── lastmile-lora-v2/             # run 3: 400 iters on the merged 112-example (+refusal) dataset, full checkpoint history
+│   └── lastmile-lora-v2-best/        # iter-340 checkpoint copied out of lastmile-lora-v2 — what rag_chain.py loads
 │
 ├── requirements.txt
 └── README.md
@@ -133,6 +151,29 @@ It wraps the ChromaDB store built during ingestion and a locally-running Ollama/
 - **Cross-encoder re-ranking** — the two-stage retrieve-then-rerank pattern: a bi-encoder cheaply narrows the field to `fetch_k` candidates, then a cross-encoder (which jointly attends over the question and each candidate, rather than comparing precomputed vectors) picks the final top-`k`. This is the default retrieval strategy inside `generate_answer()` — it produced the most relevant top-k in side-by-side testing against similarity, MMR, and HyDE.
 
 **Conversation memory** — multi-turn follow-ups are handled by rewriting each new question into a standalone form before retrieval, using recent chat history. The final answer is still generated strictly from that turn's retrieved chunks: chat history is never fed into the answer-generation prompt itself, so grounding stays strict — a conversational tone is fine, but the model can't repeat something it (or the user) said earlier as if it were a retrieved fact.
+
+---
+
+## What's implemented (Phase 3)
+
+Phase 3 takes `mlx-community/Mistral-7B-Instruct-v0.3-4bit` (an MLX-converted, 4-bit quantized build of Mistral, run locally on Apple Silicon via `mlx-lm`) and LoRA fine-tunes it — QLoRA-style, since the base model is already 4-bit quantized — on this project's own knowledge base, so the model's answer *style* — grounding, source citation, and refusal behavior — is shaped by examples drawn directly from `data/raw/`, rather than relying entirely on prompting.
+
+| Script | What it does |
+|---|---|
+| `generate_finetune_data.py` | Builds the core training set: for each of the 55 Phase 1 chunks, an LLM (Ollama/Mistral) generates 2–3 plausible questions that chunk answers, then a second LLM call answers each question using *only* that chunk as context — the same `(context, question) → answer` shape `rag_chain.py` uses at inference time (a RAFT-style dataset, not bare Q&A), so fine-tuning reinforces reading and citing supplied context rather than answering from memorized facts. |
+| `generate_refusal_examples.py` | Builds a second, smaller set of *deliberately* mismatched examples — a genuinely out-of-scope question (e.g. fuel surcharge policy, driver certification) paired with a randomly chosen, unrelated chunk — labeled with the RAG prompt's exact required refusal sentence. See "Refusal-wording dilution" below for why this exists. |
+| `train_lora.py` | Runs the actual LoRA fine-tune via `mlx-lm`'s Python API, with every hyperparameter and the reasoning behind it committed in the file itself (rank-8 LoRA — QLoRA-style, since the base model is already 4-bit quantized — on the top 16 of 32 layers, prompt-masked loss so only the assistant's answer tokens are trained on, per-run configurable `--iters`/`--adapter-path`/`--save-every`). Logs the full train/val loss curve to `training_log.json` alongside each adapter. |
+| `compare_models.py` | Runs a fixed set of test questions through the base model and the fine-tuned adapter side by side, using identical retrieved context for both, for a qualitative gut-check before RAGAS scoring (Phase 4). |
+
+**Two quality gates in `generate_finetune_data.py`, and why:** a chunk that's mostly a markdown header with little body text doesn't give question-generation enough to work with, so thin chunks (under ~40 words of body text) are skipped before spending any LLM calls on them. Separately, even a substantial chunk can produce a question that drifts off-topic during generation — and because each question is generated *from* a specific chunk, that chunk is guaranteed by construction to answer it, so any refusal-shaped answer at that point is a signal of drift, not a legitimate "out of scope" case. Both accidental-refusal filtering and one regeneration retry are applied automatically (17 of 55 chunks skipped as too thin; 15 of the remaining question/answer pairs caught by the refusal filter, 12 recovered by retrying, 3 dropped), leaving 94 confident, correctly-grounded examples.
+
+**Finding 1 — overfitting, and early stopping.** The first LoRA run (94 examples, 316 iterations ≈ 4 epochs) showed validation loss bottom out at iteration 159 (0.348) and then drift back up to 0.376 by the final iteration — an ~8% relative regression — while training loss kept falling the entire time. That's the textbook overfitting signature: past roughly 2 epochs, the adapter was still fitting the training set but no longer generalizing better. A second run, identical in every setting except stopping at iteration 160, reproduced that same minimum almost exactly (0.350) and landed there as both the best *and* final validation score — confirming the early-stopping point rather than just assuming it from the first curve.
+
+**Finding 2 — refusal-wording dilution.** Comparing the early-stopped fine-tuned model against the base model on an out-of-scope question (`compare_models.py`) surfaced a subtler issue: both models correctly declined to answer, but the fine-tuned model's refusal had drifted slightly off the RAG prompt's exact required wording, while the base model used it verbatim. The root cause traced back to the quality gate described above — by design, it filtered out *every* accidental refusal from the training set, which meant the model never saw a single correctly-labeled "this genuinely isn't in the knowledge base" example during training, only confident, fully-answered ones. The fix, `generate_refusal_examples.py`, adds that missing signal back deliberately rather than accidentally: 18 out-of-scope questions, each paired with a randomly mismatched chunk, labeled with the literal required fallback sentence (pulled programmatically from the prompt template itself, not retyped by hand, so it can't drift out of sync). Merged with the 94 confident-answer examples, the dataset grew to 112 total (94 confident / 18 refusal — 16.1% refusal examples), re-split 95 train / 17 validation. Re-running `compare_models.py` against a model fine-tuned on this merged set confirmed the fix — including against a second, harder out-of-scope question designed so retrieval returns superficially on-topic chunks (mentioning "Zone 1," SLA figures) that still don't actually answer it.
+
+**A nice side-effect worth calling out: the two training runs' validation curves look qualitatively different.** Run 1 (94 examples) shows a clean rise-then-fall — bottoms at iteration 159, then climbs — the sharp signature of a small, fairly narrow dataset saturating quickly. Run 3 (112 examples, 400 iterations) shows no such divergence: validation loss drifts gently downward through most of training and flattens into noisy oscillation from roughly iteration 120 onward, still near its best value at the final iteration (iteration 340 was treated as this run's practical optimum, since `--save-every` was set to match the evaluation interval specifically so a checkpoint exists at the minimum). A larger, more varied training set — even 18 additional examples — visibly pushed back the point where the model runs out of new signal to learn from.
+
+**Dual generation backends.** `rag_chain.py`'s `generate_answer()` now takes a `backend` parameter: `"ollama"` (unchanged from Phase 2 — base Mistral via a local Ollama server) or `"mlx-finetuned"` (the LoRA adapter above, served via `mlx-lm`). These stay as two separate backends rather than one fused model because Ollama runs Mistral through a GGUF/llama.cpp runtime, while the LoRA adapter was trained against — and is stored as MLX safetensors against — the MLX build of the model; there's no lossless bridge between the two short of a real fuse-then-convert-to-GGUF pipeline. Keeping the adapter unfused also preserves exactly the thing this phase needed throughout: the ability to swap in a different checkpoint (the overfit run, the early-stopped run, or the final merged-dataset run) and compare it against the base model on demand, which a single merged model wouldn't support nearly as easily.
 
 ---
 
@@ -205,7 +246,7 @@ python src/rag_chain.py
 | Vector stores | `01_data_prep` | FAISS internals; ChromaDB persistence + metadata filtering |
 | RAG architecture | `src/rag_chain.py` | End-to-end retrieval-augmented generation |
 | HyDE & MMR | `src/rag_chain.py` | Advanced retrieval beyond naive top-k |
-| LoRA / QLoRA | (not yet created) | Parameter-efficient fine-tuning on free GPU |
+| LoRA fine-tuning (QLoRA-style) | `src/train_lora.py`, `src/generate_finetune_data.py` | Parameter-efficient fine-tuning on a 4-bit quantized base, locally via MLX; RAFT-style dataset construction, overfitting detection, early stopping |
 | RAGAS | (not yet created) | Rigorous RAG quality measurement |
 | LangSmith | (not yet created) | Production observability for LLM apps |
 

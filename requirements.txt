@@ -26,6 +26,20 @@ pypdf==5.1.0
 # ── Generation (Phase 2) ────────────────────────────────────────────────────
 langchain-ollama==0.2.3
 
+# ── Fine-tuning (Phase 3) ─────────────────────────────────────────────────────
+# Apple Silicon (M-series) only — built on the MLX array framework, which
+# targets Apple's unified memory architecture directly. Will not install on
+# Intel Macs or non-Apple hardware.
+#
+# Note: pulls in transformers==5.17.0 and tokenizers==0.23.2, which pip flags
+# as conflicting on paper with chromadb's (tokenizers<=0.20.3) and
+# sentence-transformers' (transformers<5.0.0) pins above. Verified working
+# end-to-end anyway as of 2026-09-20 — embeddings, cross-encoder, Chroma
+# retrieval, and mlx-lm generation all tested together in the same venv with
+# no runtime errors. No environment changes made; documenting this so a
+# future "why does pip complain" moment isn't a surprise.
+mlx-lm==0.31.3
+
 # ── Phase 2+ (uncomment when needed) ──────────────────────────────────────────
 # ragas==0.2.6
 # langsmith==0.2.3

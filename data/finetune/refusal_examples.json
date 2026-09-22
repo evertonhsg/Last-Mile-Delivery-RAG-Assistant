@@ -1,0 +1,218 @@
+[
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: routing_rules.md]\nKPIs are reported at route level, aggregated to station level daily.\n\n---\n\n## 7. Route Review Process\n\nRoutes are reviewed under these conditions:\n\n- **Weekly:** Station manager reviews routes with adherence below 88%.\n- **Monthly:** NP team reviews zone-level km-per-stop trends.\n- **Triggered:** Any route generating >3 customer complaints in a 7-day period\n  is flagged for immediate review.\n- **Seasonal:** Full route restructure in October (pre-peak) and February\n  (post-peak) each year.\n\nQuestion: What is the process for international customs clearance on cross-border shipments?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about customs clearance for international shipments."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\n---\n\n## 6. Capacity Utilisation Targets\n\n| Metric | Target | Alert threshold |\n|---|---|---|\n| Fleet utilisation (owned) | 85\u201392% | <75% or >95% |\n| Vendor volume share | \u226450% of daily volume | >60% for >3 days |\n| Hub sortation utilisation | \u226488% of rated capacity | >92% |\n| Driver overtime rate | \u226412% of driver-days | >20% |\n\nWhen any metric crosses its alert threshold, an automated notification is\nsent to the Station Manager and Regional Planning lead.\n\nQuestion: What certifications or licenses are required for drivers to operate company vehicles?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about driver certification and licensing requirements."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: zone_definitions.md]\n### Zone 3 \u2014 Semi-Rural\n- **Coverage:** Towns and villages between 20\u201360 km from the nearest hub.\n- **Fleet type:** Large vans (up to 12t), occasional HGV trunking.\n- **Max stops per route:** 60 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 where volume justifies daily\n  frequency; otherwise 2-day delivery.\n- **Vendor fleet allowed:** Yes, up to 70% of daily volume.\n\nQuestion: How is the fuel surcharge calculated and when is it applied to a shipment?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about fuel surcharge policy."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: station_operations.md]\n| Customer complaint rate | Complaints per 1,000 deliveries | \u22642.5 |\n\nQuestion: What is the procedure for reporting a safety incident at a warehouse?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about warehouse safety incident reporting."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\nForecasts are generated at station \u00d7 service-type \u00d7 day granularity.\nMAPE target: \u22648% at station level over a 7-day horizon.\n\n---\n\n## 3. Fleet Sizing Rules\n\nRequired fleet size is calculated daily using:\n\n```\nRequired vans = ceil(Forecast volume / Target stops-per-van)\nBuffer fleet  = ceil(Required vans \u00d7 Buffer rate)\nTotal fleet   = Required vans + Buffer fleet\n```\n\nQuestion: What insurance coverage is required from third-party carriers we contract with?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about third-party carrier insurance requirements."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\nBuffer rates by zone:\n- Zone 1: 8% buffer (low volatility, high density).\n- Zone 2: 12% buffer.\n- Zone 3: 18% buffer.\n- Zone 4: 25% buffer (high volatility, route uncertainty).\n\n---\n\n## 4. Vendor Fleet Management\n\n### Vendor Tier Classification\n\nQuestion: What are the terms and conditions of our vehicle leasing agreements?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about vehicle leasing terms."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: sla_policies.md]\n### Damage or Loss\n- Claims must be filed within **10 business days** of expected delivery date.\n- Standard liability cap: **\u20ac100 per parcel** unless declared value is higher.\n- High-value shipments (declared value >\u20ac500) require mandatory insurance.\n\n---\n\n## 4. SLA Measurement & Reporting\n\nQuestion: What does the union labor agreement specify about driver overtime pay?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about union labor agreement terms."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: station_operations.md]\n1. **Unload & scan** \u2014 all inbound parcels scanned on conveyor belt (Meridian Scan Events entry: `UNLOAD`).\n2. **Exception identification** \u2014 damaged, mislabelled, or hazmat parcels segregated (event: `EXCEPTION`).\n3. **Route assignment** \u2014 system auto-assigns parcel to route based on postcode (event: `ROUTE_ASSIGN`).\n4. **Loading** \u2014 parcels loaded into vehicles in reverse-stop-sequence order (last stop loaded first).\n\nQuestion: What is the policy for reimbursing employee travel expenses?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about employee expense reimbursement policy."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\n### Vendor SLA Requirements\n- Vendors must achieve \u226593% on-time delivery rate measured over 28 days.\n- Failure to meet SLA for 2 consecutive months triggers a performance review.\n- Three consecutive months below SLA results in tier demotion or contract termination.\n\n### Vendor Data Integration\n- Gold and Silver vendors connect via Meridian Vendor API for real-time tracking.\n- Bronze vendors submit end-of-day scan files (CSV format, by 23:00 local time).\n\n---\n\n## 5. Peak Season Capacity Protocol\n\nQuestion: How do we ensure GDPR compliance when handling customer delivery data?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about data privacy and GDPR compliance."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: zone_definitions.md]\n- **Example cities:** Porto Centro, London Zone 1, Paris 1er\u20138e arrondissements.\n\nQuestion: What is the marketing budget allocation for this quarter?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about marketing budget allocation."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: station_operations.md]\n1. **Vehicle return** \u2014 all owned fleet must return to station by 21:00.\n2. **POD reconciliation** \u2014 driver submits Proof of Delivery count; system reconciles\n   against dispatched manifest (event: `RECONCILE`).\n3. **Undelivered parcel handling:**\n   - Parcel with remaining attempts \u2192 returned to sort cage for next day.\n   - Parcel at max attempts \u2192 labelled for PUDO transfer or return-to-sender.\n4. **Vehicle condition report** \u2014 driver completes digital checklist (damage, fuel/charge level).\n\nQuestion: What are the renewal terms for our warehouse leases?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about warehouse lease renewal terms."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\nForecasts are generated at station \u00d7 service-type \u00d7 day granularity.\nMAPE target: \u22648% at station level over a 7-day horizon.\n\n---\n\n## 3. Fleet Sizing Rules\n\nRequired fleet size is calculated daily using:\n\n```\nRequired vans = ceil(Forecast volume / Target stops-per-van)\nBuffer fleet  = ceil(Required vans \u00d7 Buffer rate)\nTotal fleet   = Required vans + Buffer fleet\n```\n\nQuestion: What is our cybersecurity incident response plan?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about cybersecurity incident response plan."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: station_operations.md]\n### Satellite Station\n- **Role:** Last-mile dispatch for Zone 2 overflow and Zone 3 coverage.\n- **Operating hours:** 06:00\u201320:00 Monday\u2013Saturday.\n- **Inbound trunking window:** 05:30\u201307:30 only (single wave).\n- **Dispatch cut-off:** 09:00 (all route types).\n- **Minimum staffing:** 2 sorters, 1 loader, 1 supervisor per shift.\n\nQuestion: What is the hiring process for new delivery drivers?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about driver recruitment and hiring process."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: routing_rules.md]\n---\n\n## 2. Route Types\n\n### Static Routes\n- Fixed sequence of stops reconstructed each day based on volume.\n- Used in Zone 1 and Zone 2 where volume is high and predictable.\n- Reviewed monthly by the Network Planning team.\n- Advantage: simple to manage, easy to train new drivers.\n\nQuestion: How many paid time off days do employees receive per year?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about employee holiday and PTO policy."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\n---\n\n## 2. Demand Forecasting\n\nVolume forecasts are produced by the Demand Planning team using an ensemble model:\n\n| Model | Weight | Best for |\n|---|---|---|\n| XGBoost (gradient boosting) | 40% | Capturing non-linear volume spikes |\n| Holt-Winters (exponential smoothing) | 35% | Seasonal baseline |\n| ARIMA | 15% | Short-term trend correction |\n| Human adjustment | 10% | Events, promotions, known anomalies |\n\nQuestion: What sustainability certifications does our packaging material hold?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about packaging material sustainability certification."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: capacity_planning.md]\n### Vendor Tier Classification\n\n| Tier | Criteria | Benefits |\n|---|---|---|\n| Gold | \u2265500 stops/day, \u226524-month relationship, SLA \u226597% | Guaranteed minimum volume commitment, priority dispatch |\n| Silver | 200\u2013499 stops/day, \u226512-month relationship, SLA \u226594% | Preferred booking, 30-day rolling contract |\n| Bronze | <200 stops/day or <12-month relationship | Ad-hoc booking, no volume guarantee |\n\nQuestion: What is the investment plan for electric vehicle charging infrastructure?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about EV charging infrastructure investment plan."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: zone_definitions.md]\n---\n\n## Zone Reclassification Policy\n\nZones are reviewed quarterly. A zone may be reclassified if any of the\nfollowing thresholds are met for two consecutive quarters:\n\nQuestion: What are the tax withholding requirements for contractor drivers?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about tax withholding for contractor drivers."
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "You are a helpful assistant answering questions about last-mile delivery operations.\nAnswer ONLY using the information in the provided context \u2014 do not use outside knowledge.\nAlways cite the source filename(s) you used to answer, e.g. (Source: sla_policies.md).\nIf the context does not contain enough information to answer the question, respond exactly with: \"I don't have enough information in the knowledge base to answer that.\"\n\nContext:\n[Source: zone_definitions.md]\n### Zone 4 \u2014 Rural / Remote\n- **Coverage:** Postcodes more than 60 km from the nearest delivery hub,\n  low-density areas.\n- **Fleet type:** Large vans and HGVs only.\n- **Max stops per route:** 35 stops/day.\n- **Standard SLA:** 2-day delivery standard; next-day available as premium\n  surcharge service only.\n- **Vendor fleet allowed:** Yes, up to 90% of daily volume. Owned\n  fleet may not be commercially viable.\n\n---\n\n## Zone Reclassification Policy\n\nQuestion: What are the standard payment terms for our suppliers?"
+      },
+      {
+        "role": "assistant",
+        "content": "I don't have enough information in the knowledge base to answer that. The provided context does not contain information about supplier payment terms."
+      }
+    ]
+  }
+]

@@ -1,25 +1,54 @@
 """
-Phase 2 — Full RAG pipeline (retrieve + prompt + generate) for the Last-Mile
-Delivery RAG Assistant, with multi-turn conversation memory.
+Phase 2/3 — Full RAG pipeline (retrieve + prompt + generate) for the
+Last-Mile Delivery RAG Assistant, with multi-turn conversation memory and
+two swappable generation backends.
 
 Given a question, this retrieves relevant chunks from the Chroma store built
-by build_vectorstore.py, assembles a grounded prompt, and sends it to a local
-Ollama model to get a final answer with cited sources. Retrieval uses
-rerank_retrieve() (similarity search + cross-encoder re-ranking), which
-tested as the strongest of the retrieval variants explored earlier in
-Phase 2. Follow-up questions are rewritten into standalone form via
-contextualize_question() before retrieval, so pronouns and implicit
-references ("what about zone 2?") resolve to something the vector store can
-actually search on.
+by build_vectorstore.py, assembles a grounded prompt, and sends it to an LLM
+to get a final answer with cited sources. Retrieval uses rerank_retrieve()
+(similarity search + cross-encoder re-ranking), which tested as the
+strongest of the retrieval variants explored earlier in Phase 2. Follow-up
+questions are rewritten into standalone form via contextualize_question()
+before retrieval, so pronouns and implicit references ("what about zone
+2?") resolve to something the vector store can actually search on. This
+shared pipeline — contextualize, retrieve, format, fill the prompt — lives
+in _build_prompt() and never differs between the two backends below.
 
-Requires Ollama running locally with the "mistral" model pulled:
+Two generation backends, not one fused model — why:
+
+  "ollama" (default): base Mistral via a local Ollama server. This was the
+    pipeline's only backend through Phase 2, and stays the default so
+    nothing about the existing REPL/behavior changes unless asked for.
+
+  "mlx-finetuned": the Phase 3 LoRA-fine-tuned model, run locally via
+    mlx-lm. This is deliberately a SEPARATE backend rather than the
+    fine-tuned weights replacing Ollama's model, for the same reason the
+    adapter itself was kept unfused back in train_lora.py: Ollama runs
+    Mistral through a GGUF/llama.cpp runtime, while the LoRA adapter was
+    trained against the MLX build of the model (mlx-community/...-4bit) and
+    is stored as MLX safetensors — two different runtimes and weight
+    formats with no lossless bridge between them short of a real
+    fuse-then-convert-to-GGUF pipeline. Standing up that conversion just to
+    have one merged model would trade away the ability to swap adapters
+    (v1 vs. v2, or a specific early-stop checkpoint — see
+    adapters/lastmile-lora-v2-best/) for no benefit this project needs
+    right now. Running the fine-tuned model directly through mlx-lm, as its
+    own backend, is the lower-friction choice, and it's also what Phase 4's
+    RAGAS evaluation needs: something it can call programmatically for
+    EITHER backend and compare.
+
+Requires Ollama running locally with the "mistral" model pulled for the
+"ollama" backend:
     ollama pull mistral
+and mlx-lm installed (Apple Silicon only) with adapters/lastmile-lora-v2-best/
+present for the "mlx-finetuned" backend — see src/train_lora.py.
 
 Run directly for an interactive chat loop (type "exit" to quit):
     python src/rag_chain.py
 """
 
 from langchain_core.documents import Document
+from langchain_core.prompt_values import ChatPromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -347,26 +376,29 @@ def contextualize_question(chat_history: list[tuple[str, str]], question: str) -
     return response.content.strip()
 
 
-def generate_answer(question: str, chat_history: list[tuple[str, str]] | None = None, k: int = 4) -> dict:
-    """Run the full RAG pipeline: contextualize, retrieve, format, prompt, generate.
+def _build_prompt(
+    question: str, chat_history: list[tuple[str, str]], k: int
+) -> tuple[str, ChatPromptValue, list[str]]:
+    """Shared pipeline for BOTH generation backends: contextualize, retrieve,
+    format, fill RAG_PROMPT. Neither backend re-implements or duplicates any
+    of this — they diverge only at the final generation call in
+    generate_answer(), which is the one thing that's actually different
+    between an Ollama-served model and an mlx-lm-served one.
 
-    chat_history is an optional list of (question, answer) tuples from
-    earlier in the conversation, oldest first. Defaults to [] (a fresh
-    conversation) when not provided.
-
-    Returns a dict with:
-      - "answer": the model's text response
-      - "sources": sorted, de-duplicated list of source filenames the
-        retrieved chunks came from (not necessarily all of which the model
-        actually cited — this is "what was available", useful for debugging
-        even when the model's own inline citations are incomplete)
-      - "standalone_question": what contextualize_question() rewrote the
+    Returns (standalone_question, prompt_value, sources):
+      - standalone_question: what contextualize_question() rewrote the
         question to — surfaced so the rewrite is visible/debuggable instead
-        of happening invisibly inside the pipeline
+        of happening invisibly inside the pipeline.
+      - prompt_value: the ChatPromptValue from RAG_PROMPT.invoke(...). The
+        "ollama" backend passes this straight to ChatOllama.invoke(), which
+        accepts a PromptValue directly. The "mlx-finetuned" backend reshapes
+        it (see _generate_mlx()) since mlx-lm needs plain role/content
+        dicts, not a PromptValue.
+      - sources: sorted, de-duplicated source filenames the retrieved chunks
+        came from (not necessarily all of which the model actually cited —
+        this is "what was available", useful for debugging even when the
+        model's own inline citations are incomplete).
     """
-    if chat_history is None:
-        chat_history = []
-
     # 1. Contextualize — resolve the raw question against recent history into
     #    something retrieval can act on independently of the conversation.
     standalone_question = contextualize_question(chat_history, question)
@@ -392,45 +424,152 @@ def generate_answer(question: str, chat_history: list[tuple[str, str]] | None = 
     #    the right chunks are already in `context` by the time generation
     #    runs, so the model doesn't need the expanded phrasing to know what
     #    "that" or "zone 2" means.
-    messages = RAG_PROMPT.invoke({"context": context, "question": question})
+    prompt_value = RAG_PROMPT.invoke({"context": context, "question": question})
 
-    # 5. Generate — send the filled prompt to a local Ollama model.
-    #    temperature=0 makes the model always pick its highest-probability
-    #    next token instead of sampling randomly. For RAG specifically we
-    #    want the model to *report* what's in the retrieved context, not be
-    #    creative — a higher temperature would let it phrase things more
-    #    "freely" at the cost of being less faithful to the source text and
-    #    less repeatable (same question could get different answers), which
-    #    makes wrong answers harder to catch and debug.
-    #
-    #    Note chat_history is NOT passed into this prompt at all. Grounding
-    #    must stay strict even in a multi-turn setting: a friendly,
-    #    conversational TONE is fine and expected, but the actual facts in
-    #    the answer must come only from `context` (this turn's retrieved
-    #    chunks). If prior chat history were fed into this prompt as
-    #    additional "context", the model could latch onto something it (or
-    #    the user) said earlier — possibly wrong, outdated, or from a
-    #    different question's retrieval — and repeat it as fact. Chat
-    #    history's only job in this pipeline is upstream, in
-    #    contextualize_question(), to figure out WHAT to retrieve — it never
-    #    gets to influence WHAT THE ANSWER SAYS.
-    llm = ChatOllama(model="mistral", temperature=0)
-    response = llm.invoke(messages)
-
-    # 6. Collect sources — pull the filename each retrieved chunk came from,
-    #    de-duplicate (multiple chunks can share a source file), and sort
-    #    for stable, readable output.
     sources = sorted({doc.metadata.get("source", "unknown") for doc in retrieved_docs})
+    return standalone_question, prompt_value, sources
+
+
+# ── MLX fine-tuned backend ───────────────────────────────────────────────────
+# See the module docstring for why this coexists with the "ollama" backend
+# instead of replacing it.
+MLX_MODEL_ID = "mlx-community/Mistral-7B-Instruct-v0.3-4bit"
+MLX_ADAPTER_PATH = "adapters/lastmile-lora-v2-best"
+MLX_MAX_TOKENS = 300
+
+_mlx_model = None
+_mlx_tokenizer = None
+
+
+def _get_mlx_model():
+    """Lazily load and cache the base model + LoRA adapter — same pattern as
+    _get_cross_encoder() above, so the ~4GB model is loaded once per process
+    rather than once per generate_answer() call.
+
+    mlx_lm is imported HERE, not at module level, for two reasons: it keeps
+    this file importable (and the "ollama" backend fully usable) on a
+    machine without mlx-lm installed — mlx-lm is Apple Silicon-only (see
+    requirements.txt) — and it means the ~4GB model load only happens the
+    first time the "mlx-finetuned" backend is actually used, not on every
+    `import rag_chain`.
+    """
+    global _mlx_model, _mlx_tokenizer
+    if _mlx_model is None:
+        from mlx_lm import load as mlx_load
+
+        _mlx_model, _mlx_tokenizer = mlx_load(MLX_MODEL_ID, adapter_path=MLX_ADAPTER_PATH)
+    return _mlx_model, _mlx_tokenizer
+
+
+def _generate_mlx(prompt_value: ChatPromptValue) -> str:
+    """Generate an answer with the LoRA fine-tuned MLX model, given the same
+    prompt_value _build_prompt() produced for the "ollama" backend.
+
+    Reuses the exact prompt-shaping proven in compare_models.py: RAG_PROMPT's
+    system+human messages, merged into a single user turn via
+    generate_finetune_data.merge_system_into_user() — this model's chat
+    template has no system role (see that function's docstring), and this is
+    the shape the adapter was actually trained on, so it's what it should be
+    served with too.
+    """
+    from mlx_lm import generate as mlx_generate
+
+    # Deferred import: generate_finetune_data.py imports FROM this module
+    # (RAG_PROMPT, format_context), so importing it back at module level
+    # here would be a circular import. By the time this function actually
+    # runs, both modules have already finished loading, so a call-time
+    # import is safe.
+    from generate_finetune_data import merge_system_into_user
+
+    model, tokenizer = _get_mlx_model()
+
+    role_map = {"system": "system", "human": "user"}
+    raw_messages = [{"role": role_map[m.type], "content": m.content} for m in prompt_value.to_messages()]
+    messages = merge_system_into_user(raw_messages)
+
+    prompt = tokenizer.apply_chat_template(messages, add_generation_prompt=True)
+    return mlx_generate(model, tokenizer, prompt, max_tokens=MLX_MAX_TOKENS, verbose=False).strip()
+
+
+def generate_answer(
+    question: str,
+    chat_history: list[tuple[str, str]] | None = None,
+    k: int = 4,
+    backend: str = "ollama",
+) -> dict:
+    """Run the full RAG pipeline: contextualize, retrieve, format, prompt, generate.
+
+    chat_history is an optional list of (question, answer) tuples from
+    earlier in the conversation, oldest first. Defaults to [] (a fresh
+    conversation) when not provided.
+
+    backend:
+      - "ollama" (default): base Mistral via a locally running Ollama
+        server. Unchanged from Phase 2.
+      - "mlx-finetuned": the Phase 3 LoRA fine-tuned model, served locally
+        via mlx-lm instead of Ollama. See the module docstring for why this
+        is a second, coexisting backend rather than a fused replacement.
+
+    Note chat_history is NOT passed into generation at all, for either
+    backend — grounding must stay strict even in a multi-turn setting: a
+    friendly, conversational TONE is fine and expected, but the actual facts
+    in the answer must come only from this turn's retrieved context. If
+    prior chat history were fed into generation as additional "context", the
+    model could latch onto something it (or the user) said earlier —
+    possibly wrong, outdated, or from a different question's retrieval — and
+    repeat it as fact. Chat history's only job in this pipeline is upstream,
+    in contextualize_question() (inside _build_prompt()), to figure out WHAT
+    to retrieve — it never gets to influence WHAT THE ANSWER SAYS.
+
+    Returns a dict with:
+      - "answer": the model's text response
+      - "sources": sorted, de-duplicated list of source filenames the
+        retrieved chunks came from (see _build_prompt())
+      - "standalone_question": what contextualize_question() rewrote the
+        question to (see _build_prompt())
+      - "backend": which of the above generated "answer" — lets callers
+        (Phase 4's RAGAS script especially, which will call this in a loop
+        across both backends) tell the two apart after the fact.
+    """
+    if chat_history is None:
+        chat_history = []
+
+    standalone_question, prompt_value, sources = _build_prompt(question, chat_history, k)
+
+    if backend == "ollama":
+        # temperature=0 makes the model always pick its highest-probability
+        # next token instead of sampling randomly. For RAG specifically we
+        # want the model to *report* what's in the retrieved context, not be
+        # creative — a higher temperature would let it phrase things more
+        # "freely" at the cost of being less faithful to the source text and
+        # less repeatable (same question could get different answers),
+        # which makes wrong answers harder to catch and debug.
+        llm = ChatOllama(model="mistral", temperature=0)
+        answer = llm.invoke(prompt_value).content
+    elif backend == "mlx-finetuned":
+        answer = _generate_mlx(prompt_value)
+    else:
+        raise ValueError(f"Unknown backend {backend!r} — expected 'ollama' or 'mlx-finetuned'.")
 
     return {
-        "answer": response.content,
+        "answer": answer,
         "sources": sources,
         "standalone_question": standalone_question,
+        "backend": backend,
     }
 
 
 if __name__ == "__main__":
     print("Last-Mile Delivery RAG Assistant (type 'exit' to quit)\n")
+
+    # Picked once, up front, rather than per-turn — this REPL is a manual
+    # smoke-test harness, not the programmatic interface. Phase 4's RAGAS
+    # script will call generate_answer(..., backend=...) directly in a loop
+    # instead, which is why that parameter (not this prompt) is the thing
+    # kept clean and simple.
+    use_finetuned = input("Use fine-tuned model? (y/n): ").strip().lower().startswith("y")
+    backend = "mlx-finetuned" if use_finetuned else "ollama"
+    print(f"Using backend: {backend}\n")
 
     # chat_history accumulates as the conversation goes — each completed
     # turn is appended at the end of the loop body, so the NEXT call to
@@ -444,7 +583,7 @@ if __name__ == "__main__":
         if not question:
             continue
 
-        result = generate_answer(question, chat_history=chat_history)
+        result = generate_answer(question, chat_history=chat_history, backend=backend)
 
         # Printing the standalone question makes the rewrite step visible —
         # useful for sanity-checking that follow-ups are being resolved
