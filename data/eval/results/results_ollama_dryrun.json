@@ -1,0 +1,24 @@
+[
+  {
+    "question": "What is the maximum number of stops per route for Zone 2?",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ],
+    "reference_answer": "The maximum number of stops per route for Zone 2 is 100 stops/day.",
+    "generated_answer": " The maximum number of stops per route for Zone 2 is 100 stops/day. (Source: zone_definitions.md)",
+    "retrieved_contexts": [
+      "### Zone 2 \u2014 Urban Periphery\n- **Coverage:** Suburban residential areas within 20 km of city core.\n- **Fleet type:** Medium vans (up to 7.5t), some electric vehicles.\n- **Max stops per route:** 100 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 for all service types.\n- **Vendor fleet allowed:** Yes, up to 50% of daily volume.\n- **Example cities:** Porto \u2014 Matosinhos, Maia; London \u2014 Zone 3\u20134 boroughs.",
+      "### Zone 4 \u2014 Rural / Remote\n- **Coverage:** Postcodes more than 60 km from the nearest delivery hub,\n  low-density areas.\n- **Fleet type:** Large vans and HGVs only.\n- **Max stops per route:** 35 stops/day.\n- **Standard SLA:** 2-day delivery standard; next-day available as premium\n  surcharge service only.\n- **Vendor fleet allowed:** Yes, up to 90% of daily volume. Owned\n  fleet may not be commercially viable.\n\n---\n\n## Zone Reclassification Policy",
+      "### Zone 3 \u2014 Semi-Rural\n- **Coverage:** Towns and villages between 20\u201360 km from the nearest hub.\n- **Fleet type:** Large vans (up to 12t), occasional HGV trunking.\n- **Max stops per route:** 60 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 where volume justifies daily\n  frequency; otherwise 2-day delivery.\n- **Vendor fleet allowed:** Yes, up to 70% of daily volume.",
+      "### Zone 1 \u2014 Urban Core\n- **Coverage:** Central city districts, typically postcodes with population\n  density above 5,000 inhabitants per km\u00b2.\n- **Fleet type:** Electric cargo bikes, compact vans (max 3.5t), walking couriers.\n- **Max stops per route:** 80 stops/day for vans, 40 stops/day for cargo bikes.\n- **Standard SLA:** Next-day delivery by 12:00 for Priority shipments;\n  by 18:00 for Standard.\n- **Vendor fleet allowed:** Yes, up to 30% of daily volume."
+    ],
+    "sources": [
+      "zone_definitions.md"
+    ],
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.8982074411246402,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  }
+]

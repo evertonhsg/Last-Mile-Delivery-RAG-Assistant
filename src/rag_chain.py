@@ -378,14 +378,14 @@ def contextualize_question(chat_history: list[tuple[str, str]], question: str) -
 
 def _build_prompt(
     question: str, chat_history: list[tuple[str, str]], k: int
-) -> tuple[str, ChatPromptValue, list[str]]:
+) -> tuple[str, ChatPromptValue, list[str], list[str]]:
     """Shared pipeline for BOTH generation backends: contextualize, retrieve,
     format, fill RAG_PROMPT. Neither backend re-implements or duplicates any
     of this — they diverge only at the final generation call in
     generate_answer(), which is the one thing that's actually different
     between an Ollama-served model and an mlx-lm-served one.
 
-    Returns (standalone_question, prompt_value, sources):
+    Returns (standalone_question, prompt_value, sources, retrieved_contexts):
       - standalone_question: what contextualize_question() rewrote the
         question to — surfaced so the rewrite is visible/debuggable instead
         of happening invisibly inside the pipeline.
@@ -398,6 +398,12 @@ def _build_prompt(
         came from (not necessarily all of which the model actually cited —
         this is "what was available", useful for debugging even when the
         model's own inline citations are incomplete).
+      - retrieved_contexts: the raw page_content of each retrieved chunk, in
+        rerank order, as plain strings — not the stitched-together, labeled
+        `context` string RAG_PROMPT gets filled with. RAGAS's
+        context_precision/context_recall metrics score retrieval chunk by
+        chunk against the reference answer, so they need the individual
+        texts, not one concatenated blob (see run_eval.py).
     """
     # 1. Contextualize — resolve the raw question against recent history into
     #    something retrieval can act on independently of the conversation.
@@ -427,7 +433,8 @@ def _build_prompt(
     prompt_value = RAG_PROMPT.invoke({"context": context, "question": question})
 
     sources = sorted({doc.metadata.get("source", "unknown") for doc in retrieved_docs})
-    return standalone_question, prompt_value, sources
+    retrieved_contexts = [doc.page_content for doc in retrieved_docs]
+    return standalone_question, prompt_value, sources, retrieved_contexts
 
 
 # ── MLX fine-tuned backend ───────────────────────────────────────────────────
@@ -525,6 +532,11 @@ def generate_answer(
       - "answer": the model's text response
       - "sources": sorted, de-duplicated list of source filenames the
         retrieved chunks came from (see _build_prompt())
+      - "retrieved_contexts": the raw text of each retrieved chunk, as a
+        list of strings (see _build_prompt()) — what RAGAS metrics like
+        context_precision/context_recall score retrieval against, distinct
+        from "sources" (filenames only) and from the single stitched
+        {context} string actually sent to the model.
       - "standalone_question": what contextualize_question() rewrote the
         question to (see _build_prompt())
       - "backend": which of the above generated "answer" — lets callers
@@ -534,7 +546,7 @@ def generate_answer(
     if chat_history is None:
         chat_history = []
 
-    standalone_question, prompt_value, sources = _build_prompt(question, chat_history, k)
+    standalone_question, prompt_value, sources, retrieved_contexts = _build_prompt(question, chat_history, k)
 
     if backend == "ollama":
         # temperature=0 makes the model always pick its highest-probability
@@ -554,6 +566,7 @@ def generate_answer(
     return {
         "answer": answer,
         "sources": sources,
+        "retrieved_contexts": retrieved_contexts,
         "standalone_question": standalone_question,
         "backend": backend,
     }

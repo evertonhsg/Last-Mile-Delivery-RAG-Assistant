@@ -1,0 +1,167 @@
+[
+  {
+    "question": "What is the maximum number of stops per route for Zone 2?",
+    "reference_answer": "The maximum number of stops per route for Zone 2 is 100 stops/day.",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ]
+  },
+  {
+    "question": "What is the primary hub for Zone 3, and what is its secondary hub?",
+    "reference_answer": "The primary hub for Zone 3 is Aveiro Regional Hub, and its secondary hub is Porto Urban Hub.",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ]
+  },
+  {
+    "question": "Under what conditions would a zone be reclassified to a lower zone number, and what does that mean for its allowed vendor fleet share?",
+    "reference_answer": "A zone would be reclassified to a lower zone number if the average daily volume increases by more than 25%. For example, if Zone 3 (Semi-Rural) experiences an average daily volume increase of more than 25% for two consecutive quarters, it may be reclassified to Zone 2 (Urban Periphery).\n\nIn the case of a reclassification from Zone 3 to Zone 2, the allowed vendor fleet share would decrease from up to 70% of daily volume to up to 50% of daily volume. This means that a smaller proportion of deliveries could be outsourced to third-party vendors in the new zone classification.",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ]
+  },
+  {
+    "question": "What percentage weight does the XGBoost model carry in Meridian's demand forecasting ensemble?",
+    "reference_answer": "The XGBoost model carries a 40% weight in Meridian's demand forecasting ensemble.",
+    "category": "single-doc",
+    "source_docs": [
+      "capacity_planning.md"
+    ]
+  },
+  {
+    "question": "What is the minimum on-time delivery rate vendors must maintain over a 28-day period?",
+    "reference_answer": "The minimum on-time delivery rate vendors must maintain over a 28-day period is 93%.",
+    "category": "single-doc",
+    "source_docs": [
+      "capacity_planning.md"
+    ]
+  },
+  {
+    "question": "What actions does Meridian take in October to prepare for peak season, and what specific thresholds trigger additional surge capacity once peak begins?",
+    "reference_answer": "In October, Meridian Logistics prepares for peak season by taking the following actions:\n\n1. Increasing vendor fleet bookings by a planned peak uplift percentage (typically 35\u201360%).\n2. Activating temporary driver headcount contracts.\n3. Confirming overflow sortation capacity with hub operations.\n4. Enabling dynamic routing for all zones.\n\nDuring peak season (November 15 \u2013 January 6), additional surge capacity is activated when either of the following triggers are met:\n\n1. Daily volume exceeds the forecast by more than 15% for 2 consecutive days.\n2. SLA performance drops below 95% at any station for 3 consecutive days.\n\nOnce peak season ends on January 7, surge capacity stands down.",
+    "category": "single-doc",
+    "source_docs": [
+      "capacity_planning.md"
+    ]
+  },
+  {
+    "question": "What is the maximum daily driving time allowed for a driver under EU Regulation 561/2006?",
+    "reference_answer": "The maximum daily driving time allowed for a driver under EU Regulation 561/2006 is 9 hours.",
+    "category": "single-doc",
+    "source_docs": [
+      "routing_rules.md"
+    ]
+  },
+  {
+    "question": "What are the default weights for the VRPTW objective function's four cost components?",
+    "reference_answer": "The default weights for the VRPTW (Vehicle Routing Problem with Time Windows) objective function's four cost components are as follows:\n\n1. Distance: \u03b1 = 0.35\n2. Time: \u03b2 = 0.30\n3. SLA_penalty: \u03b3 = 0.25\n4. Capacity_waste: \u03b4 = 0.10\n\nDuring peak season (Nov 15 \u2013 Jan 6), the weight for SLA_penalty is increased to 0.40 and the weight for capacity_waste is reduced to 0.05 to prioritize SLA compliance over efficiency.",
+    "category": "single-doc",
+    "source_docs": [
+      "routing_rules.md"
+    ]
+  },
+  {
+    "question": "How does the VRPTW objective function's weighting change during peak season, and what route type is more commonly used in Zone 2 during that same period?",
+    "reference_answer": "During peak season (Nov 15 \u2013 Jan 6), the weighting of the VRPTW objective function changes. The weight for SLA compliance (\u03b3) is increased to 0.40, and the weight for capacity waste (\u03b4) is reduced to 0.05. This prioritizes SLA compliance over efficiency during the peak season.\n\nIn Zone 2 during peak season, Mixed Routes are more commonly used. These routes have a static backbone with dynamic overflow stops appended at the end, and they are common in Zone 2 during peak periods (November\u2013December, Easter).",
+    "category": "single-doc",
+    "source_docs": [
+      "routing_rules.md"
+    ]
+  },
+  {
+    "question": "What is the delivery commitment time for the Priority Overnight service tier?",
+    "reference_answer": "The delivery commitment time for the Priority Overnight service tier is by 10:30 the next business day.",
+    "category": "single-doc",
+    "source_docs": [
+      "sla_policies.md"
+    ]
+  },
+  {
+    "question": "How many delivery attempts does Meridian make before a parcel is held for pickup?",
+    "reference_answer": "Meridian makes a maximum of 3 delivery attempts before a parcel is held for pickup.",
+    "category": "single-doc",
+    "source_docs": [
+      "sla_policies.md"
+    ]
+  },
+  {
+    "question": "What compensation is owed for a Priority Overnight SLA breach, and how does that compare to the compensation for a Standard tier breach?",
+    "reference_answer": "For a Priority Overnight (PO) SLA breach, the compensation owed includes a full refund of the surcharge (\u20ac4.50) and an additional credit note of \u20ac2.00 per parcel.\n\nOn the other hand, for a Standard tier breach, the compensation is a credit note of \u20ac1.00 per parcel.\n\nSo, the compensation for a Priority Overnight SLA breach is significantly higher than that for a Standard tier breach (\u20ac6.50 total vs \u20ac1.00 per parcel).",
+    "category": "single-doc",
+    "source_docs": [
+      "sla_policies.md"
+    ]
+  },
+  {
+    "question": "What is the minimum staffing level required per shift at an Urban Hub Station?",
+    "reference_answer": "The minimum staffing level required per shift at an Urban Hub Station is 4 sorters, 2 loaders, and 1 supervisor.",
+    "category": "single-doc",
+    "source_docs": [
+      "station_operations.md"
+    ]
+  },
+  {
+    "question": "How long is vehicle telematics data retained for compliance purposes?",
+    "reference_answer": "The vehicle telematics data is retained for 90 days for compliance purposes.",
+    "category": "single-doc",
+    "source_docs": [
+      "station_operations.md"
+    ]
+  },
+  {
+    "question": "What happens to an undelivered parcel at end of day depending on whether it has remaining delivery attempts, and what event is logged when parcels are first unloaded each morning?",
+    "reference_answer": "At the end of the day, an undelivered parcel with remaining delivery attempts will be returned to the sort cage for the next day. If a parcel has reached its maximum delivery attempts, it will either be labeled for PUDO transfer or return-to-sender. The event logged when parcels are first unloaded each morning is `UNLOAD`.",
+    "category": "single-doc",
+    "source_docs": [
+      "station_operations.md"
+    ]
+  },
+  {
+    "question": "A Zone 1 Priority Overnight parcel breaches its SLA \u2014 what compensation is the customer owed, and what fleet types typically deliver in that zone?",
+    "reference_answer": "In the event of a Zone 1 Priority Overnight parcel breaching its SLA, the customer is owed a full refund of the surcharge (+\u20ac4.50) and an additional credit note of \u20ac2.00. The typical fleet types delivering in Zone 1 include electric cargo bikes, compact vans (max 3.5t), and walking couriers.",
+    "category": "cross-doc",
+    "source_docs": [
+      "sla_policies.md",
+      "zone_definitions.md"
+    ]
+  },
+  {
+    "question": "What is Zone 4's fleet buffer rate under normal capacity planning, and what is the maximum load of the HGV vehicles assigned to Zone 4 routes?",
+    "reference_answer": "Zone 4's fleet buffer rate under normal capacity planning is 25%. The maximum load of the HGV vehicles assigned to Zone 4 routes is 6,000 kg / 40 m\u00b3.",
+    "category": "cross-doc",
+    "source_docs": [
+      "capacity_planning.md",
+      "routing_rules.md"
+    ]
+  },
+  {
+    "question": "If a Priority Overnight parcel is added to a route after the driver has already been dispatched, what happens to it, and what is the dispatch cut-off time for Priority routes at an Urban Hub Station?",
+    "reference_answer": "If a Priority Overnight parcel is added to a route after the driver has already been dispatched, it will be escalated to the station manager for manual decision. The dispatch cut-off time for Priority routes at an Urban Hub Station is 08:30.",
+    "category": "cross-doc",
+    "source_docs": [
+      "routing_rules.md",
+      "station_operations.md"
+    ]
+  },
+  {
+    "question": "What is Meridian Logistics' policy on carbon offset purchases for its delivery fleet?",
+    "reference_answer": "I don't have enough information in the knowledge base to answer that.",
+    "category": "refusal",
+    "source_docs": []
+  },
+  {
+    "question": "What retirement or pension benefits does Meridian Logistics offer its corporate employees?",
+    "reference_answer": "I don't have enough information in the knowledge base to answer that.",
+    "category": "refusal",
+    "source_docs": []
+  },
+  {
+    "question": "Where is Meridian Logistics' corporate headquarters located?",
+    "reference_answer": "I don't have enough information in the knowledge base to answer that.",
+    "category": "refusal",
+    "source_docs": []
+  }
+]

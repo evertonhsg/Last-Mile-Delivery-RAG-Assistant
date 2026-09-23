@@ -40,7 +40,17 @@ langchain-ollama==0.2.3
 # future "why does pip complain" moment isn't a surprise.
 mlx-lm==0.31.3
 
-# ── Phase 2+ (uncomment when needed) ──────────────────────────────────────────
-# ragas==0.2.6
+# ── Evaluation (Phase 4) ────────────────────────────────────────────────────
+# Was originally placeholder-pinned at 0.2.6 below (guessed before this phase
+# was actually built); the real current release is 0.4.3, and its API has
+# moved on substantially since 0.2.x — see src/run_eval.py's docstring for
+# specifics (SingleTurnSample/EvaluationDataset instead of a plain HF
+# Dataset with question/answer/contexts/ground_truth columns, several of the
+# top-level imports this file uses are now deprecated in favor of a newer
+# "collections" module, etc.). Pinned here so a future `pip install` doesn't
+# silently jump to a version with yet another API shift.
+ragas==0.4.3
+
+# ── Phase 5+ (uncomment when needed) ──────────────────────────────────────────
 # langsmith==0.2.3
 # streamlit==1.41.1

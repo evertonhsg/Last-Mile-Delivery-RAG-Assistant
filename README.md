@@ -47,7 +47,7 @@ This project builds an internal-facing Q&A assistant that makes that knowledge i
 | **Phase 1** | Chunking strategies, embeddings, FAISS → ChromaDB | ✅ Done |
 | **Phase 2** | Full RAG chain, HyDE, MMR, re-ranking, memory | ✅ Done |
 | **Phase 3** | LoRA fine-tuning on a 4-bit quantized Mistral-7B (QLoRA-style) via MLX | ✅ Done |
-| **Phase 4** | RAGAS evaluation, LangSmith tracing | ⬜ Planned |
+| **Phase 4** | RAGAS evaluation — base vs. fine-tuned, 21 held-out questions | ✅ Done |
 | **Phase 5** | Streamlit chat UI, Docker, deployment | ⬜ Planned |
 
 ---
@@ -78,7 +78,7 @@ To be clear about scope: this project currently implements the RAG pipeline itse
 | `FAISS` | In-memory vector search (Phase 1 baseline) | Superseded by ChromaDB (Phase 2) |
 | `Ollama` | Run Mistral-7B locally, no API key needed | ✅ Implemented |
 | `mlx-lm` | QLoRA-style fine-tuning (LoRA on a 4-bit quantized base) + local inference on Apple Silicon (Apple Silicon only — will not install on Intel Macs or non-Apple hardware) | ✅ Implemented |
-| `RAGAS` | RAG evaluation framework | ⬜ Planned |
+| `RAGAS` | RAG evaluation framework — faithfulness, answer relevancy, context precision/recall | ✅ Implemented |
 | `LangSmith` | Pipeline tracing and observability | ⬜ Planned |
 | `Streamlit` | Chat UI with source attribution panel | ⬜ Planned |
 
@@ -93,12 +93,19 @@ lastmile-delivery-rag/
 │   ├── processed/
 │   │   └── chunks.json              # chunked output from Phase 1
 │   ├── chroma_db/                   # persisted Chroma vector store (gitignored, rebuild via build_vectorstore.py)
-│   └── finetune/                    # Phase 3: LoRA training data
-│       ├── train.jsonl              # current train split (95 ex.) — confident-answer + refusal examples merged
-│       ├── valid.jsonl              # current val split (17 ex.)
-│       ├── train_v1.jsonl           # pre-refusal-fix split (79 ex., confident-answer only) — kept for reference
-│       ├── valid_v1.jsonl           # pre-refusal-fix val split (15 ex.) — kept for reference
-│       └── refusal_examples.json    # the 18 deliberate refusal examples merged into train/valid.jsonl
+│   ├── finetune/                    # Phase 3: LoRA training data
+│   │   ├── train.jsonl              # current train split (95 ex.) — confident-answer + refusal examples merged
+│   │   ├── valid.jsonl              # current val split (17 ex.)
+│   │   ├── train_v1.jsonl           # pre-refusal-fix split (79 ex., confident-answer only) — kept for reference
+│   │   ├── valid_v1.jsonl           # pre-refusal-fix val split (15 ex.) — kept for reference
+│   │   └── refusal_examples.json    # the 18 deliberate refusal examples merged into train/valid.jsonl
+│   └── eval/                        # Phase 4: RAGAS evaluation set + results
+│       ├── eval_set.json            # 21 held-out questions (15 single-doc, 3 cross-doc, 3 refusal) + reference answers
+│       └── results/
+│           ├── results_ollama.json          # per-question scores, base backend
+│           ├── results_mlx-finetuned.json   # per-question scores, fine-tuned backend
+│           ├── summary.json                 # both backends' per-question records combined
+│           └── results_*_dryrun.json        # 1-question sanity-check runs, kept for reference
 │
 ├── notebooks/
 │   └── 01_data_prep.ipynb           # Phase 1: chunking + embedding experiments
@@ -110,7 +117,9 @@ lastmile-delivery-rag/
 │   ├── generate_refusal_examples.py # Phase 3: builds the deliberate refusal examples
 │   ├── train_lora.py                # Phase 3: LoRA fine-tuning via mlx-lm, versioned run config
 │   ├── compare_models.py            # Phase 3: qualitative base-vs-fine-tuned side-by-side
-│   └── mlx_smoke_test.py            # Phase 3: base-model load/generate/memory sanity check
+│   ├── mlx_smoke_test.py            # Phase 3: base-model load/generate/memory sanity check
+│   ├── generate_eval_set.py         # Phase 4: builds the held-out eval_set.json from data/raw/*.md
+│   └── run_eval.py                  # Phase 4: RAGAS harness — scores both backends, prints the comparison table
 │
 ├── adapters/                         # Phase 3: LoRA runs (.safetensors gitignored — see .gitignore; configs/logs kept)
 │   ├── lastmile-lora/                # run 1: 316 iters (4 epochs), 94-example dataset — overfit past iter ~159
@@ -226,14 +235,59 @@ python src/rag_chain.py
 
 ## Evaluation results
 
-> *Populated after Phase 4 — RAGAS scoring on 50 synthetic Q&A pairs.*
+RAGAS scoring of both `generate_answer()` backends (`ollama` = base Mistral, `mlx-finetuned` = the Phase 3 LoRA adapter) against 21 held-out questions — see `data/eval/eval_set.json` for the exact questions and reference answers, and `src/run_eval.py` for the harness.
 
-| Metric | Score | Description |
+**Overall (n=21)**
+
+| Metric | ollama (base) | mlx-finetuned |
 |---|---|---|
-| Faithfulness | — | Is the answer grounded in the retrieved context? |
-| Answer relevancy | — | Does the answer actually address the question? |
-| Context precision | — | Are the retrieved chunks relevant? |
-| Context recall | — | Was the necessary context retrieved? |
+| Faithfulness | 0.835 | **0.880** |
+| Answer relevancy | **0.706** | 0.695 |
+| Context precision | 0.799 | 0.802 |
+| Context recall | 0.816 | 0.816 |
+
+**By category**
+
+*single-doc (n=15)*
+
+| Metric | ollama (base) | mlx-finetuned |
+|---|---|---|
+| Faithfulness | 0.825 | 0.832 |
+| Answer relevancy | 0.812 | 0.792 |
+| Context precision | 0.937 | 0.941 |
+| Context recall | 1.000 | 1.000 |
+
+*cross-doc (n=3)*
+
+| Metric | ollama (base) | mlx-finetuned |
+|---|---|---|
+| Faithfulness | 0.717 | **1.000** |
+| Answer relevancy | 0.885 | 0.903 |
+| Context precision | 0.907 | 0.907 |
+| Context recall | 0.833 | 0.833 |
+
+*refusal (n=3)*
+
+| Metric | ollama (base) | mlx-finetuned |
+|---|---|---|
+| Faithfulness | 1.000 | 1.000 |
+| Answer relevancy | 0.000 | 0.000 |
+| Context precision | 0.000 | 0.000 |
+| Context recall | 0.000 | 0.000 |
+
+### Methodology and caveats
+
+**Held-out, not recycled.** All 21 questions are built directly from `data/raw/*.md` (see `src/generate_eval_set.py`) — never passed through `generate_finetune_data.py` or `generate_refusal_examples.py`, and not sampled from `data/finetune/*.jsonl`, which the LoRA adapter was both trained AND checkpoint-selected against. A model doing well on data shaped like its own training set would be a much weaker result than doing well here.
+
+**The judge is a local 7B model, not GPT-4.** All four metrics are scored by `ChatOllama(model="mistral", temperature=0)` — the same model this project runs everywhere else, wrapped via RAGAS's LangChain wrapper, with no API key and no hosted call. Most RAGAS tutorials assume a frontier hosted judge (GPT-4/GPT-4o); a 7B local model gives noticeably noisier per-statement verdicts (we saw this directly during harness testing — 5 of 168 judge calls in this run outright failed with a timeout or a malformed structured-output parse, excluded from the means above rather than counted as 0). Treat the absolute scores as directional, not as calibrated against any external benchmark.
+
+**Judge self-evaluation bias runs, if anything, against the fine-tuning result.** The judge (plain Ollama Mistral) is the literal same model and weights as the `ollama` backend being scored — a textbook self-evaluation setup, which LLM-as-judge research generally finds biases a judge toward rating its *own* phrasing and style more favorably. The `mlx-finetuned` backend, by contrast, is being judged by a genuinely different model (different weights from LoRA fine-tuning, different runtime — MLX vs. Ollama/GGUF). If this bias has any effect here, it should work *against* observing a fine-tuning improvement, not for it — which makes the faithfulness gap below more credible, not less.
+
+**Sample sizes are small and uneven across categories — 15 single-doc, but only 3 each for cross-doc and refusal.** This cuts against reading the category breakdown as precise. The cross-doc faithfulness gap (0.717 → 1.000) is a full swing across just 3 questions — directionally consistent with RAFT-style grounded-answer training helping most on multi-document synthesis, but not something to treat as a precise effect size at n=3. Single-doc's larger n=15 makes its small answer-relevancy gap (0.812 → 0.792) more likely to reflect genuine (if minor) backend variation than pure noise — though at n=15 this still isn't a rigorous statistical claim in either direction.
+
+**Refusal category's near-zero answer relevancy/context precision/context recall for BOTH backends is expected metric behavior, not a failure.** RAGAS's `answer_relevancy` explicitly scores non-committal answers like "I don't have enough information..." as low-relevance by design (it's in the metric's own documented examples), and `context_precision`/`context_recall` have nothing to score when the reference answer contains no factual claims to check retrieval against. The metric that *does* meaningfully validate refusal quality — **faithfulness = 1.000 for both backends** — confirms neither model hallucinated or contradicted the (irrelevant) retrieved context when correctly declining to answer.
+
+**Headline finding:** fine-tuning improved overall faithfulness (0.835 → 0.880), concentrated in cross-document synthesis questions — exactly where RAFT-style training on grounded, context-only answers would be expected to help most. Retrieval-dependent metrics (context precision/recall) are within judge noise of each other across both backends, correctly — `_build_prompt()` is shared, so both backends retrieve from the identical call, and any difference reflects judge-scoring noise across separate runs, not a real retrieval difference.
 
 ---
 
@@ -247,7 +301,7 @@ python src/rag_chain.py
 | RAG architecture | `src/rag_chain.py` | End-to-end retrieval-augmented generation |
 | HyDE & MMR | `src/rag_chain.py` | Advanced retrieval beyond naive top-k |
 | LoRA fine-tuning (QLoRA-style) | `src/train_lora.py`, `src/generate_finetune_data.py` | Parameter-efficient fine-tuning on a 4-bit quantized base, locally via MLX; RAFT-style dataset construction, overfitting detection, early stopping |
-| RAGAS | (not yet created) | Rigorous RAG quality measurement |
+| RAGAS | `src/run_eval.py`, `src/generate_eval_set.py` | Rigorous RAG quality measurement; faithfulness/relevancy/precision/recall, held-out eval set design, LLM-as-judge caveats |
 | LangSmith | (not yet created) | Production observability for LLM apps |
 
 ---

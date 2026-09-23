@@ -1,0 +1,488 @@
+[
+  {
+    "question": "What is the maximum number of stops per route for Zone 2?",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ],
+    "reference_answer": "The maximum number of stops per route for Zone 2 is 100 stops/day.",
+    "generated_answer": " The maximum number of stops per route for Zone 2 is 100 stops/day. (Source: zone_definitions.md)",
+    "retrieved_contexts": [
+      "### Zone 2 \u2014 Urban Periphery\n- **Coverage:** Suburban residential areas within 20 km of city core.\n- **Fleet type:** Medium vans (up to 7.5t), some electric vehicles.\n- **Max stops per route:** 100 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 for all service types.\n- **Vendor fleet allowed:** Yes, up to 50% of daily volume.\n- **Example cities:** Porto \u2014 Matosinhos, Maia; London \u2014 Zone 3\u20134 boroughs.",
+      "### Zone 4 \u2014 Rural / Remote\n- **Coverage:** Postcodes more than 60 km from the nearest delivery hub,\n  low-density areas.\n- **Fleet type:** Large vans and HGVs only.\n- **Max stops per route:** 35 stops/day.\n- **Standard SLA:** 2-day delivery standard; next-day available as premium\n  surcharge service only.\n- **Vendor fleet allowed:** Yes, up to 90% of daily volume. Owned\n  fleet may not be commercially viable.\n\n---\n\n## Zone Reclassification Policy",
+      "### Zone 3 \u2014 Semi-Rural\n- **Coverage:** Towns and villages between 20\u201360 km from the nearest hub.\n- **Fleet type:** Large vans (up to 12t), occasional HGV trunking.\n- **Max stops per route:** 60 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 where volume justifies daily\n  frequency; otherwise 2-day delivery.\n- **Vendor fleet allowed:** Yes, up to 70% of daily volume.",
+      "### Zone 1 \u2014 Urban Core\n- **Coverage:** Central city districts, typically postcodes with population\n  density above 5,000 inhabitants per km\u00b2.\n- **Fleet type:** Electric cargo bikes, compact vans (max 3.5t), walking couriers.\n- **Max stops per route:** 80 stops/day for vans, 40 stops/day for cargo bikes.\n- **Standard SLA:** Next-day delivery by 12:00 for Priority shipments;\n  by 18:00 for Standard.\n- **Vendor fleet allowed:** Yes, up to 30% of daily volume."
+    ],
+    "sources": [
+      "zone_definitions.md"
+    ],
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.9156456994583922,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What is the primary hub for Zone 3, and what is its secondary hub?",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ],
+    "reference_answer": "The primary hub for Zone 3 is Aveiro Regional Hub, and its secondary hub is Porto Urban Hub.",
+    "generated_answer": " The primary hub for Zone 3 is the Aveiro Regional Hub, and its secondary hub is not specified in the provided context. (Source: zone_definitions.md)",
+    "retrieved_contexts": [
+      "| Zone | Primary Hub | Secondary Hub | Max trunking distance |\n|---|---|---|---|\n| Zone 1 | Porto Urban Hub | N/A | 15 km |\n| Zone 2 | Porto Urban Hub | Maia Satellite | 30 km |\n| Zone 3 | Aveiro Regional Hub | Porto Urban Hub | 65 km |\n| Zone 4 | Coimbra Hub | Aveiro Regional Hub | 130 km |",
+      "| Trigger | Reclassification direction |\n|---|---|\n| Average daily volume increases >25% | One zone lower (e.g. Z3 \u2192 Z2) |\n| Average daily volume decreases >20% | One zone higher (e.g. Z2 \u2192 Z3) |\n| New hub opens within 30 km | Eligible for Zone 1 or 2 review |\n| Customer density drops below 200/km\u00b2 | Eligible for Zone 4 review |\n\n---\n\n## Zone-to-Hub Assignment\n\nEach zone is anchored to a primary hub and may have a secondary hub for\noverflow or contingency routing.",
+      "### Zone 3 \u2014 Semi-Rural\n- **Coverage:** Towns and villages between 20\u201360 km from the nearest hub.\n- **Fleet type:** Large vans (up to 12t), occasional HGV trunking.\n- **Max stops per route:** 60 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 where volume justifies daily\n  frequency; otherwise 2-day delivery.\n- **Vendor fleet allowed:** Yes, up to 70% of daily volume.",
+      "---\n\n## 1. Station Types\n\n### Urban Hub Station\n- **Role:** Primary sortation and dispatch point for Zone 1 and Zone 2 deliveries.\n- **Operating hours:** 05:00\u201322:00 Monday\u2013Saturday; 07:00\u201320:00 Sunday.\n- **Inbound trunking window:** 04:00\u201306:30 (first wave), 10:00\u201311:30 (second wave).\n- **Dispatch cut-off:** 08:30 (Priority routes), 10:00 (Standard routes).\n- **Minimum staffing:** 4 sorters, 2 loaders, 1 supervisor per shift."
+    ],
+    "sources": [
+      "station_operations.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.0,
+    "context_precision": 0.8055555555287036,
+    "context_recall": 1.0
+  },
+  {
+    "question": "Under what conditions would a zone be reclassified to a lower zone number, and what does that mean for its allowed vendor fleet share?",
+    "category": "single-doc",
+    "source_docs": [
+      "zone_definitions.md"
+    ],
+    "reference_answer": "A zone would be reclassified to a lower zone number if the average daily volume increases by more than 25%. For example, if Zone 3 (Semi-Rural) experiences an average daily volume increase of more than 25% for two consecutive quarters, it may be reclassified to Zone 2 (Urban Periphery).\n\nIn the case of a reclassification from Zone 3 to Zone 2, the allowed vendor fleet share would decrease from up to 70% of daily volume to up to 50% of daily volume. This means that a smaller proportion of deliveries could be outsourced to third-party vendors in the new zone classification.",
+    "generated_answer": " A zone would be reclassified to a lower zone number if it does not meet the thresholds for being a Zone 4 (Rural/Remote) for two consecutive quarters, as stated in the Zone Reclassification Policy (Source: zone_definitions.md).\n\nIf a zone is reclassified to a lower zone number, it would mean a change in the allowed vendor fleet share. For example, if a zone is reclassified to Zone 3, the vendor fleet allowed would be reduced from up to 90% of daily volume to up to the vendor contract maximum, as defined in the Vendor Fleet Management section (Source: routing_rules.md). However, the specifics of the vendor fleet share for each zone other than Zone 4 are not provided in the context.",
+    "retrieved_contexts": [
+      "---\n\n## Zone Reclassification Policy\n\nZones are reviewed quarterly. A zone may be reclassified if any of the\nfollowing thresholds are met for two consecutive quarters:",
+      "### Zone 4 \u2014 Rural / Remote\n- **Coverage:** Postcodes more than 60 km from the nearest delivery hub,\n  low-density areas.\n- **Fleet type:** Large vans and HGVs only.\n- **Max stops per route:** 35 stops/day.\n- **Standard SLA:** 2-day delivery standard; next-day available as premium\n  surcharge service only.\n- **Vendor fleet allowed:** Yes, up to 90% of daily volume. Owned\n  fleet may not be commercially viable.\n\n---\n\n## Zone Reclassification Policy",
+      "Buffer rates by zone:\n- Zone 1: 8% buffer (low volatility, high density).\n- Zone 2: 12% buffer.\n- Zone 3: 18% buffer.\n- Zone 4: 25% buffer (high volatility, route uncertainty).\n\n---\n\n## 4. Vendor Fleet Management\n\n### Vendor Tier Classification",
+      "---\n\n## 3. Fleet Allocation Rules\n\nFleet is allocated in priority order based on route type and zone:\n\n| Priority | Vehicle type | Preferred zone | Max load |\n|---|---|---|---|\n| 1 | Electric cargo bike | Zone 1 only | 100 kg / 0.5 m\u00b3 |\n| 2 | Electric van (3.5t) | Zone 1, Zone 2 | 900 kg / 6 m\u00b3 |\n| 3 | Diesel van (7.5t) | Zone 2, Zone 3 | 2,500 kg / 18 m\u00b3 |\n| 4 | HGV (12t) | Zone 3, Zone 4 | 6,000 kg / 40 m\u00b3 |\n| 5 | Vendor van | Any zone | Per vendor contract |"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "routing_rules.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.0,
+    "context_precision": 0.999999999975,
+    "context_recall": NaN
+  },
+  {
+    "question": "What percentage weight does the XGBoost model carry in Meridian's demand forecasting ensemble?",
+    "category": "single-doc",
+    "source_docs": [
+      "capacity_planning.md"
+    ],
+    "reference_answer": "The XGBoost model carries a 40% weight in Meridian's demand forecasting ensemble.",
+    "generated_answer": " The XGBoost model carries a percentage weight of 40% in Meridian's demand forecasting ensemble. (Source: capacity_planning.md)",
+    "retrieved_contexts": [
+      "---\n\n## 2. Demand Forecasting\n\nVolume forecasts are produced by the Demand Planning team using an ensemble model:\n\n| Model | Weight | Best for |\n|---|---|---|\n| XGBoost (gradient boosting) | 40% | Capturing non-linear volume spikes |\n| Holt-Winters (exponential smoothing) | 35% | Seasonal baseline |\n| ARIMA | 15% | Short-term trend correction |\n| Human adjustment | 10% | Events, promotions, known anomalies |",
+      "Forecasts are generated at station \u00d7 service-type \u00d7 day granularity.\nMAPE target: \u22648% at station level over a 7-day horizon.\n\n---\n\n## 3. Fleet Sizing Rules\n\nRequired fleet size is calculated daily using:\n\n```\nRequired vans = ceil(Forecast volume / Target stops-per-van)\nBuffer fleet  = ceil(Required vans \u00d7 Buffer rate)\nTotal fleet   = Required vans + Buffer fleet\n```",
+      "### Vendor SLA Requirements\n- Vendors must achieve \u226593% on-time delivery rate measured over 28 days.\n- Failure to meet SLA for 2 consecutive months triggers a performance review.\n- Three consecutive months below SLA results in tier demotion or contract termination.\n\n### Vendor Data Integration\n- Gold and Silver vendors connect via Meridian Vendor API for real-time tracking.\n- Bronze vendors submit end-of-day scan files (CSV format, by 23:00 local time).\n\n---\n\n## 5. Peak Season Capacity Protocol",
+      "### Peak Activation Triggers\nAdditional surge capacity is activated when:\n- Daily volume exceeds forecast by >15% for 2 consecutive days.\n- SLA performance drops below 95% at any station for 3 consecutive days.\n\n### Peak De-escalation\nSurge capacity stands down when:\n- 7-day rolling volume drops to within 5% of non-peak forecast.\n- Date passes January 7.\n\n---\n\n## 6. Capacity Utilisation Targets"
+    ],
+    "sources": [
+      "capacity_planning.md"
+    ],
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.9914862281319438,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What is the minimum on-time delivery rate vendors must maintain over a 28-day period?",
+    "category": "single-doc",
+    "source_docs": [
+      "capacity_planning.md"
+    ],
+    "reference_answer": "The minimum on-time delivery rate vendors must maintain over a 28-day period is 93%.",
+    "generated_answer": " The minimum on-time delivery rate vendors must maintain over a 28-day period is 93% as stated in the Vendor SLA Requirements (Source: capacity_planning.md).",
+    "retrieved_contexts": [
+      "### Vendor SLA Requirements\n- Vendors must achieve \u226593% on-time delivery rate measured over 28 days.\n- Failure to meet SLA for 2 consecutive months triggers a performance review.\n- Three consecutive months below SLA results in tier demotion or contract termination.\n\n### Vendor Data Integration\n- Gold and Silver vendors connect via Meridian Vendor API for real-time tracking.\n- Bronze vendors submit end-of-day scan files (CSV format, by 23:00 local time).\n\n---\n\n## 5. Peak Season Capacity Protocol",
+      "| Service | Zone 1 | Zone 2 | Zone 3 | Zone 4 |\n|---|---|---|---|---|\n| Priority Overnight | \u226598.5% | \u226597.0% | N/A | N/A |\n| Express | \u226597.5% | \u226596.0% | \u226594.0% | \u226590.0% |\n| Standard | \u226599.0% | \u226598.5% | \u226597.0% | \u226595.0% |\n\nPerformance is measured at station level, averaged over rolling 28-day periods.\n\n---\n\n## 3. Failed Delivery Handling",
+      "### Vendor Tier Classification\n\n| Tier | Criteria | Benefits |\n|---|---|---|\n| Gold | \u2265500 stops/day, \u226524-month relationship, SLA \u226597% | Guaranteed minimum volume commitment, priority dispatch |\n| Silver | 200\u2013499 stops/day, \u226512-month relationship, SLA \u226594% | Preferred booking, 30-day rolling contract |\n| Bronze | <200 stops/day or <12-month relationship | Ad-hoc booking, no volume guarantee |",
+      "### Damage or Loss\n- Claims must be filed within **10 business days** of expected delivery date.\n- Standard liability cap: **\u20ac100 per parcel** unless declared value is higher.\n- High-value shipments (declared value >\u20ac500) require mandatory insurance.\n\n---\n\n## 4. SLA Measurement & Reporting"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "sla_policies.md"
+    ],
+    "faithfulness": 0.75,
+    "answer_relevancy": 0.9215020332146189,
+    "context_precision": 0.9999999999666667,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What actions does Meridian take in October to prepare for peak season, and what specific thresholds trigger additional surge capacity once peak begins?",
+    "category": "single-doc",
+    "source_docs": [
+      "capacity_planning.md"
+    ],
+    "reference_answer": "In October, Meridian Logistics prepares for peak season by taking the following actions:\n\n1. Increasing vendor fleet bookings by a planned peak uplift percentage (typically 35\u201360%).\n2. Activating temporary driver headcount contracts.\n3. Confirming overflow sortation capacity with hub operations.\n4. Enabling dynamic routing for all zones.\n\nDuring peak season (November 15 \u2013 January 6), additional surge capacity is activated when either of the following triggers are met:\n\n1. Daily volume exceeds the forecast by more than 15% for 2 consecutive days.\n2. SLA performance drops below 95% at any station for 3 consecutive days.\n\nOnce peak season ends on January 7, surge capacity stands down.",
+    "generated_answer": " In October, Meridian takes the following actions to prepare for peak season:\n\n1. Vendor fleet bookings are increased by a planned peak uplift percentage (typically 35\u201360%). (Source: capacity_planning.md)\n2. Temporary driver headcount contracts are activated. (Source: capacity_planning.md)\n3. Overflow sortation capacity is confirmed with hub operations. (Source: capacity_planning.md)\n4. Dynamic routing is enabled for all zones. (Source: capacity_planning.md)\n\nAdditional surge capacity is activated during peak season when:\n- Daily volume exceeds forecast by more than 15% for 2 consecutive days. (Source: capacity_planning.md)\n- SLA performance drops below 95% at any station for 3 consecutive days. (Source: capacity_planning.md)",
+    "retrieved_contexts": [
+      "---\n\n## 5. Peak Season Capacity Protocol\n\nPeak season is defined as November 15 \u2013 January 6 each year.\n\n### Pre-Peak Preparation (October)\n1. Vendor fleet bookings increased by planned peak uplift percentage (typically 35\u201360%).\n2. Temporary driver headcount contracts activated.\n3. Overflow sortation capacity confirmed with hub operations.\n4. Dynamic routing enabled for all zones.",
+      "### Peak Activation Triggers\nAdditional surge capacity is activated when:\n- Daily volume exceeds forecast by >15% for 2 consecutive days.\n- SLA performance drops below 95% at any station for 3 consecutive days.\n\n### Peak De-escalation\nSurge capacity stands down when:\n- 7-day rolling volume drops to within 5% of non-peak forecast.\n- Date passes January 7.\n\n---\n\n## 6. Capacity Utilisation Targets",
+      "### Vendor SLA Requirements\n- Vendors must achieve \u226593% on-time delivery rate measured over 28 days.\n- Failure to meet SLA for 2 consecutive months triggers a performance review.\n- Three consecutive months below SLA results in tier demotion or contract termination.\n\n### Vendor Data Integration\n- Gold and Silver vendors connect via Meridian Vendor API for real-time tracking.\n- Bronze vendors submit end-of-day scan files (CSV format, by 23:00 local time).\n\n---\n\n## 5. Peak Season Capacity Protocol",
+      "---\n\n## 5. SLA Exclusions\n\nThe following conditions exempt Meridian Logistics from SLA compensation obligations:\n\n- Severe weather events (wind >90 km/h, snowfall >15 cm in 24h, flooding).\n- Industrial action affecting transport infrastructure.\n- Incorrect or incomplete delivery address provided by shipper.\n- Force majeure events as defined under applicable law.\n- Bank holidays in the destination country (these are excluded from\n  the business day count)."
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "sla_policies.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9392738423663581,
+    "context_precision": 0.9999999999666667,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What is the maximum daily driving time allowed for a driver under EU Regulation 561/2006?",
+    "category": "single-doc",
+    "source_docs": [
+      "routing_rules.md"
+    ],
+    "reference_answer": "The maximum daily driving time allowed for a driver under EU Regulation 561/2006 is 9 hours.",
+    "generated_answer": " The context does not provide specific information about the maximum daily driving time allowed for a driver under EU Regulation 561/2006. However, it mentions that the driver's legal working hours are limited to a maximum of 9 hours driving per day. (Source: routing_rules.md)",
+    "retrieved_contexts": [
+      "1. **Hard constraints** (must never be violated):\n   - Vehicle capacity (weight and volume limits).\n   - Driver legal working hours: max 9h driving per day (EU Regulation 561/2006).\n   - Time-window commitments for Priority Overnight stops.\n   - Hazmat segregation rules (ADR-classified parcels cannot share with food).",
+      "---\n\n## 6. Capacity Utilisation Targets\n\n| Metric | Target | Alert threshold |\n|---|---|---|\n| Fleet utilisation (owned) | 85\u201392% | <75% or >95% |\n| Vendor volume share | \u226450% of daily volume | >60% for >3 days |\n| Hub sortation utilisation | \u226488% of rated capacity | >92% |\n| Driver overtime rate | \u226412% of driver-days | >20% |\n\nWhen any metric crosses its alert threshold, an automated notification is\nsent to the Station Manager and Regional Planning lead.",
+      "### Zone 2 \u2014 Urban Periphery\n- **Coverage:** Suburban residential areas within 20 km of city core.\n- **Fleet type:** Medium vans (up to 7.5t), some electric vehicles.\n- **Max stops per route:** 100 stops/day.\n- **Standard SLA:** Next-day delivery by 18:00 for all service types.\n- **Vendor fleet allowed:** Yes, up to 50% of daily volume.\n- **Example cities:** Porto \u2014 Matosinhos, Maia; London \u2014 Zone 3\u20134 boroughs.",
+      "---\n\n## 6. Route Performance KPIs\n\n| KPI | Definition | Target |\n|---|---|---|\n| Stop compliance rate | % of planned stops completed on day of dispatch | \u226598.5% |\n| Route adherence | % of routes completed in planned sequence | \u226592.0% |\n| On-road time variance | Actual vs planned drive time | \u2264+15% |\n| Km per stop | Total km driven / total stops completed | \u22641.8 km (Zone 1\u20132), \u22644.5 km (Zone 3\u20134) |\n| Failed first attempt rate | Failed deliveries / total attempts | \u22647.0% |"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "routing_rules.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.999999999999897,
+    "context_precision": 0.9166666666361111,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What are the default weights for the VRPTW objective function's four cost components?",
+    "category": "single-doc",
+    "source_docs": [
+      "routing_rules.md"
+    ],
+    "reference_answer": "The default weights for the VRPTW (Vehicle Routing Problem with Time Windows) objective function's four cost components are as follows:\n\n1. Distance: \u03b1 = 0.35\n2. Time: \u03b2 = 0.30\n3. SLA_penalty: \u03b3 = 0.25\n4. Capacity_waste: \u03b4 = 0.10\n\nDuring peak season (Nov 15 \u2013 Jan 6), the weight for SLA_penalty is increased to 0.40 and the weight for capacity_waste is reduced to 0.05 to prioritize SLA compliance over efficiency.",
+    "generated_answer": " The default weights for the VRPTW objective function's four cost components are \u03b1=0.35 for distance, \u03b2=0.30 for time, \u03b3=0.25 for SLA_penalty, and \u03b4=0.10 for capacity_waste. (Source: routing_rules.md)",
+    "retrieved_contexts": [
+      "Vendor fleet is dispatched **only after** owned fleet is fully utilised for the day,\nunless a vendor contract specifies guaranteed minimum volume.\n\n---\n\n## 4. Route Optimisation Algorithm\n\nThe Meridian Logistics planning system uses a **Vehicle Routing Problem with Time Windows\n(VRPTW)** solver. The objective function minimises:\n\n```\nTotal cost = \u03b1 \u00d7 distance + \u03b2 \u00d7 time + \u03b3 \u00d7 SLA_penalty + \u03b4 \u00d7 capacity_waste\n```\n\nDefault weights: \u03b1=0.35, \u03b2=0.30, \u03b3=0.25, \u03b4=0.10.",
+      "Default weights: \u03b1=0.35, \u03b2=0.30, \u03b3=0.25, \u03b4=0.10.\n\nDuring peak season (Nov 15 \u2013 Jan 6), \u03b3 is increased to 0.40 and \u03b4 reduced to\n0.05 to prioritise SLA compliance over efficiency.\n\n---\n\n## 5. Dynamic Stop Addition (DSA)\n\nStops added after the route has been dispatched (typically from e-commerce\nplatforms with late cut-off times) follow the DSA protocol:",
+      "---\n\n## 4. Key Performance Indicators (Station Level)",
+      "---\n\n## 2. Demand Forecasting\n\nVolume forecasts are produced by the Demand Planning team using an ensemble model:\n\n| Model | Weight | Best for |\n|---|---|---|\n| XGBoost (gradient boosting) | 40% | Capturing non-linear volume spikes |\n| Holt-Winters (exponential smoothing) | 35% | Seasonal baseline |\n| ARIMA | 15% | Short-term trend correction |\n| Human adjustment | 10% | Events, promotions, known anomalies |"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "routing_rules.md",
+      "station_operations.md"
+    ],
+    "faithfulness": 0.8,
+    "answer_relevancy": 0.9999999999998459,
+    "context_precision": 0.999999999975,
+    "context_recall": 1.0
+  },
+  {
+    "question": "How does the VRPTW objective function's weighting change during peak season, and what route type is more commonly used in Zone 2 during that same period?",
+    "category": "single-doc",
+    "source_docs": [
+      "routing_rules.md"
+    ],
+    "reference_answer": "During peak season (Nov 15 \u2013 Jan 6), the weighting of the VRPTW objective function changes. The weight for SLA compliance (\u03b3) is increased to 0.40, and the weight for capacity waste (\u03b4) is reduced to 0.05. This prioritizes SLA compliance over efficiency during the peak season.\n\nIn Zone 2 during peak season, Mixed Routes are more commonly used. These routes have a static backbone with dynamic overflow stops appended at the end, and they are common in Zone 2 during peak periods (November\u2013December, Easter).",
+    "generated_answer": " During peak season (Nov 15 \u2013 Jan 6), the weighting of the VRPTW objective function's SLA penalty (\u03b3) is increased to 0.40, and the weighting of the capacity waste (\u03b4) is reduced to 0.05. This prioritizes SLA compliance over efficiency during peak season.\n\nIn Zone 2 during peak periods (November\u2013December, Easter), the more commonly used route type is Mixed Routes. This is because Mixed Routes consist of a static backbone with dynamic overflow stops appended at the end, which is a common practice in zones with higher demand during peak periods. (Source: routing_rules.md, capacity_planning.md)",
+    "retrieved_contexts": [
+      "Vendor fleet is dispatched **only after** owned fleet is fully utilised for the day,\nunless a vendor contract specifies guaranteed minimum volume.\n\n---\n\n## 4. Route Optimisation Algorithm\n\nThe Meridian Logistics planning system uses a **Vehicle Routing Problem with Time Windows\n(VRPTW)** solver. The objective function minimises:\n\n```\nTotal cost = \u03b1 \u00d7 distance + \u03b2 \u00d7 time + \u03b3 \u00d7 SLA_penalty + \u03b4 \u00d7 capacity_waste\n```\n\nDefault weights: \u03b1=0.35, \u03b2=0.30, \u03b3=0.25, \u03b4=0.10.",
+      "Default weights: \u03b1=0.35, \u03b2=0.30, \u03b3=0.25, \u03b4=0.10.\n\nDuring peak season (Nov 15 \u2013 Jan 6), \u03b3 is increased to 0.40 and \u03b4 reduced to\n0.05 to prioritise SLA compliance over efficiency.\n\n---\n\n## 5. Dynamic Stop Addition (DSA)\n\nStops added after the route has been dispatched (typically from e-commerce\nplatforms with late cut-off times) follow the DSA protocol:",
+      "### Dynamic Routes\n- Constructed fresh each morning using the optimisation engine.\n- Used in Zone 3 and Zone 4 where stop density varies daily.\n- Inputs: parcel manifests, driver availability, vehicle capacity, traffic data.\n- Advantage: more efficient, adapts to volume fluctuations.\n\n### Mixed Routes\n- Static backbone with dynamic overflow stops appended at end.\n- Common in Zone 2 during peak periods (November\u2013December, Easter).\n\n---\n\n## 3. Fleet Allocation Rules",
+      "---\n\n## 5. Peak Season Capacity Protocol\n\nPeak season is defined as November 15 \u2013 January 6 each year.\n\n### Pre-Peak Preparation (October)\n1. Vendor fleet bookings increased by planned peak uplift percentage (typically 35\u201360%).\n2. Temporary driver headcount contracts activated.\n3. Overflow sortation capacity confirmed with hub operations.\n4. Dynamic routing enabled for all zones."
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "routing_rules.md"
+    ],
+    "faithfulness": 0.8333333333333334,
+    "answer_relevancy": 0.758122632864597,
+    "context_precision": 0.999999999975,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What is the delivery commitment time for the Priority Overnight service tier?",
+    "category": "single-doc",
+    "source_docs": [
+      "sla_policies.md"
+    ],
+    "reference_answer": "The delivery commitment time for the Priority Overnight service tier is by 10:30 the next business day.",
+    "generated_answer": " The delivery commitment time for the Priority Overnight service tier is by 10:30 the next business day. (Source: sla_policies.md)",
+    "retrieved_contexts": [
+      "### Priority Overnight (PO)\n- **Commitment:** Delivery by 10:30 the next business day.\n- **Eligible zones:** Zone 1 and Zone 2 only.\n- **Surcharge:** +\u20ac4.50 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 10:30.\n- **Compensation:** Full refund of surcharge on breach + credit note of \u20ac2.00.",
+      "| Service | Zone 1 | Zone 2 | Zone 3 | Zone 4 |\n|---|---|---|---|---|\n| Priority Overnight | \u226598.5% | \u226597.0% | N/A | N/A |\n| Express | \u226597.5% | \u226596.0% | \u226594.0% | \u226590.0% |\n| Standard | \u226599.0% | \u226598.5% | \u226597.0% | \u226595.0% |\n\nPerformance is measured at station level, averaged over rolling 28-day periods.\n\n---\n\n## 3. Failed Delivery Handling",
+      "### Vendor Tier Classification\n\n| Tier | Criteria | Benefits |\n|---|---|---|\n| Gold | \u2265500 stops/day, \u226524-month relationship, SLA \u226597% | Guaranteed minimum volume commitment, priority dispatch |\n| Silver | 200\u2013499 stops/day, \u226512-month relationship, SLA \u226594% | Preferred booking, 30-day rolling contract |\n| Bronze | <200 stops/day or <12-month relationship | Ad-hoc booking, no volume guarantee |",
+      "### Standard (ST)\n- **Commitment:** Delivery within 2 business days by 18:00.\n- **Eligible zones:** All zones.\n- **Surcharge:** Base rate, no surcharge.\n- **Failure threshold:** SLA breach after 18:00 on day 2.\n- **Compensation:** Credit note of \u20ac1.00 per parcel on breach.\n\n---\n\n## 2. SLA Performance Targets\n\nMeridian Logistics sets the following internal performance targets by zone:"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "sla_policies.md"
+    ],
+    "faithfulness": NaN,
+    "answer_relevancy": 0.9999999999998291,
+    "context_precision": 0.999999999975,
+    "context_recall": 1.0
+  },
+  {
+    "question": "How many delivery attempts does Meridian make before a parcel is held for pickup?",
+    "category": "single-doc",
+    "source_docs": [
+      "sla_policies.md"
+    ],
+    "reference_answer": "Meridian makes a maximum of 3 delivery attempts before a parcel is held for pickup.",
+    "generated_answer": " Meridian makes a maximum of 3 delivery attempts before a parcel is held for pickup. (Source: sla_policies.md)",
+    "retrieved_contexts": [
+      "---\n\n## 3. Failed Delivery Handling\n\n### Attempt Policy\n- A maximum of **3 delivery attempts** are made before a parcel is returned\n  to the sender or held at a pickup point.\n- Attempt intervals: day 0 (first attempt), day 1 (second), day 3 (third).\n- After 3 failed attempts, parcel moves to **Hold for Pickup** status for 7 days.",
+      "### Pickup Point Partner\n- **Role:** Customer collection point (PUDO \u2014 Pick Up Drop Off).\n- **Operating hours:** Set by the partner (typically retail store hours).\n- **Parcel hold period:** 7 calendar days before return to sender.\n- **Max capacity:** 200 parcels per day (standard PUDO agreement).\n\n---\n\n## 2. Morning Sortation Process\n\nThe morning sortation runs as follows after inbound trunking:",
+      "### Missed Delivery Window\n- If the customer is absent, a **digital notification** is triggered immediately\n  via the Meridian Delivery Manager app.\n- Customer has until 20:00 on the same day to reschedule via self-service.\n- If not rescheduled, the next attempt is automatically booked.",
+      "### Standard (ST)\n- **Commitment:** Delivery within 2 business days by 18:00.\n- **Eligible zones:** All zones.\n- **Surcharge:** Base rate, no surcharge.\n- **Failure threshold:** SLA breach after 18:00 on day 2.\n- **Compensation:** Credit note of \u20ac1.00 per parcel on breach.\n\n---\n\n## 2. SLA Performance Targets\n\nMeridian Logistics sets the following internal performance targets by zone:"
+    ],
+    "sources": [
+      "sla_policies.md",
+      "station_operations.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9999999999998509,
+    "context_precision": 0.7499999999625,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What compensation is owed for a Priority Overnight SLA breach, and how does that compare to the compensation for a Standard tier breach?",
+    "category": "single-doc",
+    "source_docs": [
+      "sla_policies.md"
+    ],
+    "reference_answer": "For a Priority Overnight (PO) SLA breach, the compensation owed includes a full refund of the surcharge (\u20ac4.50) and an additional credit note of \u20ac2.00 per parcel.\n\nOn the other hand, for a Standard tier breach, the compensation is a credit note of \u20ac1.00 per parcel.\n\nSo, the compensation for a Priority Overnight SLA breach is significantly higher than that for a Standard tier breach (\u20ac6.50 total vs \u20ac1.00 per parcel).",
+    "generated_answer": " For a Priority Overnight (PO) SLA breach, the compensation owed includes a full refund of the surcharge (+\u20ac4.50 per parcel vs Standard rate) and a credit note of \u20ac2.00.\n\nFor a Standard tier breach, the compensation owed is a credit note of \u20ac1.00 per parcel on breach.\n\nTherefore, the compensation for a Priority Overnight SLA breach is higher than that for a Standard tier breach. (Source: sla_policies.md)",
+    "retrieved_contexts": [
+      "### Priority Overnight (PO)\n- **Commitment:** Delivery by 10:30 the next business day.\n- **Eligible zones:** Zone 1 and Zone 2 only.\n- **Surcharge:** +\u20ac4.50 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 10:30.\n- **Compensation:** Full refund of surcharge on breach + credit note of \u20ac2.00.",
+      "### Standard (ST)\n- **Commitment:** Delivery within 2 business days by 18:00.\n- **Eligible zones:** All zones.\n- **Surcharge:** Base rate, no surcharge.\n- **Failure threshold:** SLA breach after 18:00 on day 2.\n- **Compensation:** Credit note of \u20ac1.00 per parcel on breach.\n\n---\n\n## 2. SLA Performance Targets\n\nMeridian Logistics sets the following internal performance targets by zone:",
+      "### Express (EX)\n- **Commitment:** Delivery by 18:00 the next business day.\n- **Eligible zones:** All zones (Zone 4 subject to volume availability).\n- **Surcharge:** +\u20ac1.80 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 18:00.\n- **Compensation:** Refund of surcharge on breach.",
+      "---\n\n## 5. SLA Exclusions\n\nThe following conditions exempt Meridian Logistics from SLA compensation obligations:\n\n- Severe weather events (wind >90 km/h, snowfall >15 cm in 24h, flooding).\n- Industrial action affecting transport infrastructure.\n- Incorrect or incomplete delivery address provided by shipper.\n- Force majeure events as defined under applicable law.\n- Bank holidays in the destination country (these are excluded from\n  the business day count)."
+    ],
+    "sources": [
+      "sla_policies.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9176396649478052,
+    "context_precision": 0.999999999975,
+    "context_recall": NaN
+  },
+  {
+    "question": "What is the minimum staffing level required per shift at an Urban Hub Station?",
+    "category": "single-doc",
+    "source_docs": [
+      "station_operations.md"
+    ],
+    "reference_answer": "The minimum staffing level required per shift at an Urban Hub Station is 4 sorters, 2 loaders, and 1 supervisor.",
+    "generated_answer": " The minimum staffing level required per shift at an Urban Hub Station is 4 sorters, 2 loaders, and 1 supervisor. (Source: station_operations.md)",
+    "retrieved_contexts": [
+      "---\n\n## 1. Station Types\n\n### Urban Hub Station\n- **Role:** Primary sortation and dispatch point for Zone 1 and Zone 2 deliveries.\n- **Operating hours:** 05:00\u201322:00 Monday\u2013Saturday; 07:00\u201320:00 Sunday.\n- **Inbound trunking window:** 04:00\u201306:30 (first wave), 10:00\u201311:30 (second wave).\n- **Dispatch cut-off:** 08:30 (Priority routes), 10:00 (Standard routes).\n- **Minimum staffing:** 4 sorters, 2 loaders, 1 supervisor per shift.",
+      "### Satellite Station\n- **Role:** Last-mile dispatch for Zone 2 overflow and Zone 3 coverage.\n- **Operating hours:** 06:00\u201320:00 Monday\u2013Saturday.\n- **Inbound trunking window:** 05:30\u201307:30 only (single wave).\n- **Dispatch cut-off:** 09:00 (all route types).\n- **Minimum staffing:** 2 sorters, 1 loader, 1 supervisor per shift.",
+      "### Level 3 \u2014 Strategic Issue (Division VP notified)\n- Hub sortation failure (>50% of parcels unprocessed).\n- Industrial action affecting station operations.\n- SLA below target for >10 consecutive days at any hub station.\n\n---\n\n## 6. Health, Safety & Compliance",
+      "---\n\n## 6. Capacity Utilisation Targets\n\n| Metric | Target | Alert threshold |\n|---|---|---|\n| Fleet utilisation (owned) | 85\u201392% | <75% or >95% |\n| Vendor volume share | \u226450% of daily volume | >60% for >3 days |\n| Hub sortation utilisation | \u226488% of rated capacity | >92% |\n| Driver overtime rate | \u226412% of driver-days | >20% |\n\nWhen any metric crosses its alert threshold, an automated notification is\nsent to the Station Manager and Regional Planning lead."
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "station_operations.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9481227256516306,
+    "context_precision": 0.8333333332916666,
+    "context_recall": 1.0
+  },
+  {
+    "question": "How long is vehicle telematics data retained for compliance purposes?",
+    "category": "single-doc",
+    "source_docs": [
+      "station_operations.md"
+    ],
+    "reference_answer": "The vehicle telematics data is retained for 90 days for compliance purposes.",
+    "generated_answer": " The vehicle telematics data is retained for 90 days for compliance purposes. (Source: station_operations.md)",
+    "retrieved_contexts": [
+      "---\n\n## 6. Health, Safety & Compliance\n\n- Manual handling limit: 25 kg per parcel without mechanical assistance.\n- All sorters complete manual handling training every 12 months.\n- Hazmat parcels (ADR classified) must be handled by certified staff only.\n- GDPR: Customer address labels must be shredded, not recycled, at end of day.\n- Vehicle telematics data is retained for 90 days for compliance and route analysis.",
+      "---\n\n## 5. Escalation Procedures\n\n### Level 1 \u2014 Operational Issue (Station Manager handles)\n- Single route SLA breach.\n- Vehicle breakdown (spare vehicle available).\n- Weather delay <2 hours.\n\n### Level 2 \u2014 Tactical Issue (Regional Operations Manager notified)\n- Station SLA below target for >3 consecutive days.\n- Vehicle shortage affecting >20% of planned routes.\n- Vendor performance below contractual SLA for >7 days.",
+      "5. **Driver briefing** \u2014 10-minute standup: route highlights, special instructions, weather alerts.\n6. **Dispatch scan** \u2014 each vehicle scanned out of depot (event: `DISPATCH`).",
+      "1. **Vehicle return** \u2014 all owned fleet must return to station by 21:00.\n2. **POD reconciliation** \u2014 driver submits Proof of Delivery count; system reconciles\n   against dispatched manifest (event: `RECONCILE`).\n3. **Undelivered parcel handling:**\n   - Parcel with remaining attempts \u2192 returned to sort cage for next day.\n   - Parcel at max attempts \u2192 labelled for PUDO transfer or return-to-sender.\n4. **Vehicle condition report** \u2014 driver completes digital checklist (damage, fuel/charge level)."
+    ],
+    "sources": [
+      "station_operations.md"
+    ],
+    "faithfulness": 0.6666666666666666,
+    "answer_relevancy": 0.993418594012565,
+    "context_precision": 0.7499999999625,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What happens to an undelivered parcel at end of day depending on whether it has remaining delivery attempts, and what event is logged when parcels are first unloaded each morning?",
+    "category": "single-doc",
+    "source_docs": [
+      "station_operations.md"
+    ],
+    "reference_answer": "At the end of the day, an undelivered parcel with remaining delivery attempts will be returned to the sort cage for the next day. If a parcel has reached its maximum delivery attempts, it will either be labeled for PUDO transfer or return-to-sender. The event logged when parcels are first unloaded each morning is `UNLOAD`.",
+    "generated_answer": " At the end of the day, if an undelivered parcel has remaining delivery attempts, it will be returned to the sort cage for the next day. If the parcel has reached its maximum attempts (3), it will be labeled for PUDO transfer or return-to-sender. This information is from the context file station_operations.md.\n\nThe event logged when parcels are first unloaded each morning is `UNLOAD`. This information is from the context file station_operations.md as well.",
+    "retrieved_contexts": [
+      "1. **Vehicle return** \u2014 all owned fleet must return to station by 21:00.\n2. **POD reconciliation** \u2014 driver submits Proof of Delivery count; system reconciles\n   against dispatched manifest (event: `RECONCILE`).\n3. **Undelivered parcel handling:**\n   - Parcel with remaining attempts \u2192 returned to sort cage for next day.\n   - Parcel at max attempts \u2192 labelled for PUDO transfer or return-to-sender.\n4. **Vehicle condition report** \u2014 driver completes digital checklist (damage, fuel/charge level).",
+      "| KPI | Definition | Daily target |\n|---|---|---|\n| Sortation accuracy | Parcels correctly routed / total sorted | \u226599.8% |\n| On-time dispatch | Routes dispatched before cut-off / total routes | \u226599.0% |\n| Delivery success rate | Successful first-attempt deliveries / total attempts | \u226593.0% |\n| POD scan rate | Parcels with valid POD scan / total delivered | \u226599.5% |\n| Undelivered rate | Undelivered at end of day / total dispatched | \u22645.0% |",
+      "---\n\n## 3. Failed Delivery Handling\n\n### Attempt Policy\n- A maximum of **3 delivery attempts** are made before a parcel is returned\n  to the sender or held at a pickup point.\n- Attempt intervals: day 0 (first attempt), day 1 (second), day 3 (third).\n- After 3 failed attempts, parcel moves to **Hold for Pickup** status for 7 days.",
+      "1. **Unload & scan** \u2014 all inbound parcels scanned on conveyor belt (Meridian Scan Events entry: `UNLOAD`).\n2. **Exception identification** \u2014 damaged, mislabelled, or hazmat parcels segregated (event: `EXCEPTION`).\n3. **Route assignment** \u2014 system auto-assigns parcel to route based on postcode (event: `ROUTE_ASSIGN`).\n4. **Loading** \u2014 parcels loaded into vehicles in reverse-stop-sequence order (last stop loaded first)."
+    ],
+    "sources": [
+      "sla_policies.md",
+      "station_operations.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.790691533871918,
+    "context_precision": 0.999999999975,
+    "context_recall": 1.0
+  },
+  {
+    "question": "A Zone 1 Priority Overnight parcel breaches its SLA \u2014 what compensation is the customer owed, and what fleet types typically deliver in that zone?",
+    "category": "cross-doc",
+    "source_docs": [
+      "sla_policies.md",
+      "zone_definitions.md"
+    ],
+    "reference_answer": "In the event of a Zone 1 Priority Overnight parcel breaching its SLA, the customer is owed a full refund of the surcharge (+\u20ac4.50) and an additional credit note of \u20ac2.00. The typical fleet types delivering in Zone 1 include electric cargo bikes, compact vans (max 3.5t), and walking couriers.",
+    "generated_answer": " The customer is owed a full refund of the surcharge (\u20ac4.50) and a credit note of \u20ac2.00 as compensation for the breach of the SLA for a Zone 1 Priority Overnight parcel. The fleet types that typically deliver in Zone 1 are electric cargo bikes, compact vans (max 3.5t), and walking couriers. (Source: sla_policies.md, zone_definitions.md)",
+    "retrieved_contexts": [
+      "### Priority Overnight (PO)\n- **Commitment:** Delivery by 10:30 the next business day.\n- **Eligible zones:** Zone 1 and Zone 2 only.\n- **Surcharge:** +\u20ac4.50 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 10:30.\n- **Compensation:** Full refund of surcharge on breach + credit note of \u20ac2.00.",
+      "### Standard (ST)\n- **Commitment:** Delivery within 2 business days by 18:00.\n- **Eligible zones:** All zones.\n- **Surcharge:** Base rate, no surcharge.\n- **Failure threshold:** SLA breach after 18:00 on day 2.\n- **Compensation:** Credit note of \u20ac1.00 per parcel on breach.\n\n---\n\n## 2. SLA Performance Targets\n\nMeridian Logistics sets the following internal performance targets by zone:",
+      "### Express (EX)\n- **Commitment:** Delivery by 18:00 the next business day.\n- **Eligible zones:** All zones (Zone 4 subject to volume availability).\n- **Surcharge:** +\u20ac1.80 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 18:00.\n- **Compensation:** Refund of surcharge on breach.",
+      "### Zone 1 \u2014 Urban Core\n- **Coverage:** Central city districts, typically postcodes with population\n  density above 5,000 inhabitants per km\u00b2.\n- **Fleet type:** Electric cargo bikes, compact vans (max 3.5t), walking couriers.\n- **Max stops per route:** 80 stops/day for vans, 40 stops/day for cargo bikes.\n- **Standard SLA:** Next-day delivery by 12:00 for Priority shipments;\n  by 18:00 for Standard.\n- **Vendor fleet allowed:** Yes, up to 30% of daily volume."
+    ],
+    "sources": [
+      "sla_policies.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 0.4,
+    "answer_relevancy": 0.806946104018459,
+    "context_precision": 0.8055555555287036,
+    "context_recall": 1.0
+  },
+  {
+    "question": "What is Zone 4's fleet buffer rate under normal capacity planning, and what is the maximum load of the HGV vehicles assigned to Zone 4 routes?",
+    "category": "cross-doc",
+    "source_docs": [
+      "capacity_planning.md",
+      "routing_rules.md"
+    ],
+    "reference_answer": "Zone 4's fleet buffer rate under normal capacity planning is 25%. The maximum load of the HGV vehicles assigned to Zone 4 routes is 6,000 kg / 40 m\u00b3.",
+    "generated_answer": " Zone 4's fleet buffer rate under normal capacity planning is 25%, as stated in the context from the file `sla_policies.md`.\n\nThe maximum load of the HGV vehicles assigned to Zone 4 routes is 6,000 kg / 40 m\u00b3, according to the information from the file `capacity_planning.md`.",
+    "retrieved_contexts": [
+      "Buffer rates by zone:\n- Zone 1: 8% buffer (low volatility, high density).\n- Zone 2: 12% buffer.\n- Zone 3: 18% buffer.\n- Zone 4: 25% buffer (high volatility, route uncertainty).\n\n---\n\n## 4. Vendor Fleet Management\n\n### Vendor Tier Classification",
+      "---\n\n## 3. Fleet Allocation Rules\n\nFleet is allocated in priority order based on route type and zone:\n\n| Priority | Vehicle type | Preferred zone | Max load |\n|---|---|---|---|\n| 1 | Electric cargo bike | Zone 1 only | 100 kg / 0.5 m\u00b3 |\n| 2 | Electric van (3.5t) | Zone 1, Zone 2 | 900 kg / 6 m\u00b3 |\n| 3 | Diesel van (7.5t) | Zone 2, Zone 3 | 2,500 kg / 18 m\u00b3 |\n| 4 | HGV (12t) | Zone 3, Zone 4 | 6,000 kg / 40 m\u00b3 |\n| 5 | Vendor van | Any zone | Per vendor contract |",
+      "### Zone 4 \u2014 Rural / Remote\n- **Coverage:** Postcodes more than 60 km from the nearest delivery hub,\n  low-density areas.\n- **Fleet type:** Large vans and HGVs only.\n- **Max stops per route:** 35 stops/day.\n- **Standard SLA:** 2-day delivery standard; next-day available as premium\n  surcharge service only.\n- **Vendor fleet allowed:** Yes, up to 90% of daily volume. Owned\n  fleet may not be commercially viable.\n\n---\n\n## Zone Reclassification Policy",
+      "### Dynamic Routes\n- Constructed fresh each morning using the optimisation engine.\n- Used in Zone 3 and Zone 4 where stop density varies daily.\n- Inputs: parcel manifests, driver availability, vehicle capacity, traffic data.\n- Advantage: more efficient, adapts to volume fluctuations.\n\n### Mixed Routes\n- Static backbone with dynamic overflow stops appended at end.\n- Common in Zone 2 during peak periods (November\u2013December, Easter).\n\n---\n\n## 3. Fleet Allocation Rules"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "routing_rules.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.990750888184083,
+    "context_precision": 0.9166666666361111,
+    "context_recall": 1.0
+  },
+  {
+    "question": "If a Priority Overnight parcel is added to a route after the driver has already been dispatched, what happens to it, and what is the dispatch cut-off time for Priority routes at an Urban Hub Station?",
+    "category": "cross-doc",
+    "source_docs": [
+      "routing_rules.md",
+      "station_operations.md"
+    ],
+    "reference_answer": "If a Priority Overnight parcel is added to a route after the driver has already been dispatched, it will be escalated to the station manager for manual decision. The dispatch cut-off time for Priority routes at an Urban Hub Station is 08:30.",
+    "generated_answer": " If a Priority Overnight parcel is added to a route after the driver has already been dispatched, it will be escalated to the station manager for manual decision, as per the routing rules (Source: routing_rules.md).\n\nThe dispatch cut-off time for Priority Overnight routes at an Urban Hub Station is not explicitly stated in the provided context. However, since Priority Overnight deliveries have a commitment of being delivered by 10:30 the next business day (Source: sla_policies.md), it can be inferred that the dispatch cut-off time would be set accordingly to ensure the delivery commitment is met.",
+    "retrieved_contexts": [
+      "1. System checks if any active driver is within 2 km of the new stop.\n2. If yes: stop is appended to that driver's manifest via mobile app.\n3. If no: stop is held for next-day delivery unless Priority Overnight service.\n4. Priority Overnight late additions are escalated to the station manager for\n   manual decision.\n\n---\n\n## 6. Route Performance KPIs",
+      "1. **Vehicle return** \u2014 all owned fleet must return to station by 21:00.\n2. **POD reconciliation** \u2014 driver submits Proof of Delivery count; system reconciles\n   against dispatched manifest (event: `RECONCILE`).\n3. **Undelivered parcel handling:**\n   - Parcel with remaining attempts \u2192 returned to sort cage for next day.\n   - Parcel at max attempts \u2192 labelled for PUDO transfer or return-to-sender.\n4. **Vehicle condition report** \u2014 driver completes digital checklist (damage, fuel/charge level).",
+      "### Priority Overnight (PO)\n- **Commitment:** Delivery by 10:30 the next business day.\n- **Eligible zones:** Zone 1 and Zone 2 only.\n- **Surcharge:** +\u20ac4.50 per parcel vs Standard rate.\n- **Failure threshold:** SLA breach if delivery occurs after 10:30.\n- **Compensation:** Full refund of surcharge on breach + credit note of \u20ac2.00.",
+      "| KPI | Definition | Daily target |\n|---|---|---|\n| Sortation accuracy | Parcels correctly routed / total sorted | \u226599.8% |\n| On-time dispatch | Routes dispatched before cut-off / total routes | \u226599.0% |\n| Delivery success rate | Successful first-attempt deliveries / total attempts | \u226593.0% |\n| POD scan rate | Parcels with valid POD scan / total delivered | \u226599.5% |\n| Undelivered rate | Undelivered at end of day / total dispatched | \u22645.0% |"
+    ],
+    "sources": [
+      "routing_rules.md",
+      "sla_policies.md",
+      "station_operations.md"
+    ],
+    "faithfulness": 0.75,
+    "answer_relevancy": 0.8577120722422972,
+    "context_precision": 0.9999999999666667,
+    "context_recall": 0.5
+  },
+  {
+    "question": "What is Meridian Logistics' policy on carbon offset purchases for its delivery fleet?",
+    "category": "refusal",
+    "source_docs": [],
+    "reference_answer": "I don't have enough information in the knowledge base to answer that.",
+    "generated_answer": " I don't have enough information in the knowledge base to answer that question. The provided context does not contain information about Meridian Logistics' policy on carbon offset purchases for its delivery fleet.",
+    "retrieved_contexts": [
+      "# Meridian Logistics \u2014 Service Level Agreement (SLA) Policies (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Service Tiers\n\nMeridian Logistics operates three customer-facing service tiers for last-mile delivery:",
+      "# Meridian Logistics \u2014 Delivery Zone Definitions (Synthetic)\n\n> **Disclaimer:** This is a synthetic document created for educational purposes.\n> All data, names, and figures are fictitious and do not represent real-world logistics operations.\n\n---\n\n## Overview\n\nMeridian Logistics organises last-mile delivery into geographic zones. Each zone is\nassigned to a set of postal codes and governs routing rules, fleet allocation,\nSLA commitments, and cost structures.\n\n---\n\n## Zone Classification",
+      "Vendor fleet is dispatched **only after** owned fleet is fully utilised for the day,\nunless a vendor contract specifies guaranteed minimum volume.\n\n---\n\n## 4. Route Optimisation Algorithm\n\nThe Meridian Logistics planning system uses a **Vehicle Routing Problem with Time Windows\n(VRPTW)** solver. The objective function minimises:\n\n```\nTotal cost = \u03b1 \u00d7 distance + \u03b2 \u00d7 time + \u03b3 \u00d7 SLA_penalty + \u03b4 \u00d7 capacity_waste\n```\n\nDefault weights: \u03b1=0.35, \u03b2=0.30, \u03b3=0.25, \u03b4=0.10.",
+      "# Meridian Logistics \u2014 Capacity Planning & Fleet Management Guidelines (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Capacity Planning Cycle\n\nMeridian Logistics uses a rolling 13-week capacity planning cycle, updated every Monday."
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "routing_rules.md",
+      "sla_policies.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.0,
+    "context_precision": 0.0,
+    "context_recall": 0.0
+  },
+  {
+    "question": "What retirement or pension benefits does Meridian Logistics offer its corporate employees?",
+    "category": "refusal",
+    "source_docs": [],
+    "reference_answer": "I don't have enough information in the knowledge base to answer that.",
+    "generated_answer": " I don't have enough information in the knowledge base to answer that question as the provided context does not contain information about retirement or pension benefits offered by Meridian Logistics.",
+    "retrieved_contexts": [
+      "# Meridian Logistics \u2014 Service Level Agreement (SLA) Policies (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Service Tiers\n\nMeridian Logistics operates three customer-facing service tiers for last-mile delivery:",
+      "---\n\n## 5. SLA Exclusions\n\nThe following conditions exempt Meridian Logistics from SLA compensation obligations:\n\n- Severe weather events (wind >90 km/h, snowfall >15 cm in 24h, flooding).\n- Industrial action affecting transport infrastructure.\n- Incorrect or incomplete delivery address provided by shipper.\n- Force majeure events as defined under applicable law.\n- Bank holidays in the destination country (these are excluded from\n  the business day count).",
+      "# Meridian Logistics \u2014 Capacity Planning & Fleet Management Guidelines (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Capacity Planning Cycle\n\nMeridian Logistics uses a rolling 13-week capacity planning cycle, updated every Monday.",
+      "# Meridian Logistics \u2014 Station Operations Manual (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Station Types"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "sla_policies.md",
+      "station_operations.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.0,
+    "context_precision": 0.0,
+    "context_recall": 0.0
+  },
+  {
+    "question": "Where is Meridian Logistics' corporate headquarters located?",
+    "category": "refusal",
+    "source_docs": [],
+    "reference_answer": "I don't have enough information in the knowledge base to answer that.",
+    "generated_answer": " I don't have enough information in the knowledge base to determine the location of Meridian Logistics' corporate headquarters. (Source: None)",
+    "retrieved_contexts": [
+      "# Meridian Logistics \u2014 Station Operations Manual (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Station Types",
+      "# Meridian Logistics \u2014 Service Level Agreement (SLA) Policies (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Service Tiers\n\nMeridian Logistics operates three customer-facing service tiers for last-mile delivery:",
+      "# Meridian Logistics \u2014 Capacity Planning & Fleet Management Guidelines (Synthetic)\n\n> **Disclaimer:** Synthetic document for educational/portfolio purposes only.\n\n---\n\n## 1. Capacity Planning Cycle\n\nMeridian Logistics uses a rolling 13-week capacity planning cycle, updated every Monday.",
+      "# Meridian Logistics \u2014 Delivery Zone Definitions (Synthetic)\n\n> **Disclaimer:** This is a synthetic document created for educational purposes.\n> All data, names, and figures are fictitious and do not represent real-world logistics operations.\n\n---\n\n## Overview\n\nMeridian Logistics organises last-mile delivery into geographic zones. Each zone is\nassigned to a set of postal codes and governs routing rules, fleet allocation,\nSLA commitments, and cost structures.\n\n---\n\n## Zone Classification"
+    ],
+    "sources": [
+      "capacity_planning.md",
+      "sla_policies.md",
+      "station_operations.md",
+      "zone_definitions.md"
+    ],
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.0,
+    "context_precision": 0.0,
+    "context_recall": 0.0
+  }
+]
