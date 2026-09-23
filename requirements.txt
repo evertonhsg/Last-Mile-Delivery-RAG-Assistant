@@ -51,6 +51,11 @@ mlx-lm==0.31.3
 # silently jump to a version with yet another API shift.
 ragas==0.4.3
 
+# ── Chat UI (Phase 5) ────────────────────────────────────────────────────────
+# Was placeholder-pinned at 1.41.1 below (guessed before this phase was built);
+# the real current release is 1.64.0 — verified installed and working
+# alongside the rest of this project's dependencies, not assumed.
+streamlit==1.64.0
+
 # ── Phase 5+ (uncomment when needed) ──────────────────────────────────────────
 # langsmith==0.2.3
-# streamlit==1.41.1

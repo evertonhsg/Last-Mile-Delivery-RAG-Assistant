@@ -48,7 +48,7 @@ This project builds an internal-facing Q&A assistant that makes that knowledge i
 | **Phase 2** | Full RAG chain, HyDE, MMR, re-ranking, memory | ✅ Done |
 | **Phase 3** | LoRA fine-tuning on a 4-bit quantized Mistral-7B (QLoRA-style) via MLX | ✅ Done |
 | **Phase 4** | RAGAS evaluation — base vs. fine-tuned, 21 held-out questions | ✅ Done |
-| **Phase 5** | Streamlit chat UI, Docker, deployment | ⬜ Planned |
+| **Phase 5** | Streamlit chat UI | ✅ Done |
 
 ---
 
@@ -80,7 +80,7 @@ To be clear about scope: this project currently implements the RAG pipeline itse
 | `mlx-lm` | QLoRA-style fine-tuning (LoRA on a 4-bit quantized base) + local inference on Apple Silicon (Apple Silicon only — will not install on Intel Macs or non-Apple hardware) | ✅ Implemented |
 | `RAGAS` | RAG evaluation framework — faithfulness, answer relevancy, context precision/recall | ✅ Implemented |
 | `LangSmith` | Pipeline tracing and observability | ⬜ Planned |
-| `Streamlit` | Chat UI with source attribution panel | ⬜ Planned |
+| `Streamlit` | Chat UI with source attribution panel | ✅ Implemented |
 
 ---
 
@@ -120,6 +120,9 @@ lastmile-delivery-rag/
 │   ├── mlx_smoke_test.py            # Phase 3: base-model load/generate/memory sanity check
 │   ├── generate_eval_set.py         # Phase 4: builds the held-out eval_set.json from data/raw/*.md
 │   └── run_eval.py                  # Phase 4: RAGAS harness — scores both backends, prints the comparison table
+│
+├── app/
+│   └── streamlit_app.py             # Phase 5: chat UI wrapping generate_answer() — no new RAG logic
 │
 ├── adapters/                         # Phase 3: LoRA runs (.safetensors gitignored — see .gitignore; configs/logs kept)
 │   ├── lastmile-lora/                # run 1: 316 iters (4 epochs), 94-example dataset — overfit past iter ~159
@@ -186,6 +189,16 @@ Phase 3 takes `mlx-community/Mistral-7B-Instruct-v0.3-4bit` (an MLX-converted, 4
 
 ---
 
+## What's implemented (Phase 5)
+
+`app/streamlit_app.py` is a chat UI wrapping `generate_answer()` — deliberately no new RAG logic of its own. Chat history lives in `st.session_state.turns`; the `list[tuple[str, str]]` shape `generate_answer()` expects is derived from it on the fly rather than kept as a second, parallel copy, so multi-turn follow-ups get resolved by the exact same `contextualize_question()` call the REPL uses, not a UI-specific re-implementation.
+
+A sidebar toggle switches the `backend` parameter between `"ollama"` and `"mlx-finetuned"`. Model/embedding/adapter loading isn't given a separate Streamlit `st.cache_resource` layer: `rag_chain.py` already lazily caches the cross-encoder and the MLX model+adapter at module level, and since Streamlit reruns the script by re-executing it top-to-bottom rather than re-importing already-loaded modules, those module-level singletons persist across reruns for free — the same way they persist across turns of the REPL's while-loop.
+
+Each answer shows its cited sources in a collapsible expander, and — on a follow-up question — the standalone question `contextualize_question()` rewrote it to, as an always-visible caption rather than something tucked behind a click. That choice paid off during testing: verified via Streamlit's official headless `AppTest` harness (drives the real script and real `generate_answer()` calls, not mocks) across both backends plus a 3-turn conversation with pronoun follow-ups, a 3rd-turn question ("what about Zone 4?") showed a stale rewrite in that caption ("...Zone 2...") — a real, minor limitation of using a 7B local model for multi-turn coreference resolution. The final answer was still correct (Zone definitions live close together in the same document, so retrieval surfaced Zone 4 anyway), but the mis-resolution would have been invisible with the caption hidden or omitted.
+
+---
+
 ## Quickstart
 
 ### 1 · Clone and install
@@ -217,6 +230,12 @@ ollama pull mistral
 
 ```bash
 python src/rag_chain.py
+```
+
+### 5 · Or run the chat UI
+
+```bash
+streamlit run app/streamlit_app.py
 ```
 
 ---
@@ -302,6 +321,7 @@ RAGAS scoring of both `generate_answer()` backends (`ollama` = base Mistral, `ml
 | HyDE & MMR | `src/rag_chain.py` | Advanced retrieval beyond naive top-k |
 | LoRA fine-tuning (QLoRA-style) | `src/train_lora.py`, `src/generate_finetune_data.py` | Parameter-efficient fine-tuning on a 4-bit quantized base, locally via MLX; RAFT-style dataset construction, overfitting detection, early stopping |
 | RAGAS | `src/run_eval.py`, `src/generate_eval_set.py` | Rigorous RAG quality measurement; faithfulness/relevancy/precision/recall, held-out eval set design, LLM-as-judge caveats |
+| Streamlit chat UI | `app/streamlit_app.py` | Wrapping an existing pipeline in a UI without duplicating its logic; `st.session_state` design; headless functional testing via `AppTest` |
 | LangSmith | (not yet created) | Production observability for LLM apps |
 
 ---
